@@ -149,7 +149,7 @@ export default function BlogPost() {
         {/* Back to Blog Link */}
         <div className="mt-16">
           <Link
-            href="/blog"
+            href="/blogs"
             className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
           >
             <svg

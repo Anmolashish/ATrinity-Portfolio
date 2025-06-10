@@ -105,7 +105,7 @@ export default function Portfolio() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap justify-center gap-3 mb-8">
+        <div className="flex flex-wrap justify-center gap-3 mb-8 mx-8">
           {["all", "react", "nextjs", "seo"].map((filter) => (
             <button
               key={filter}
@@ -139,11 +139,11 @@ export default function Portfolio() {
 
               <div className="p-6">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-xl font-bold text-gray-800">
+                  <h3 className="text-xl max-md:text-lg font-bold text-gray-800">
                     {project.title}
                   </h3>
                   <span
-                    className={`text-xs px-2 py-1 rounded-full ${
+                    className={`text-xs px-2 min-w-fit py-1 rounded-full ${
                       project.type === "commercial"
                         ? "bg-green-100 text-green-800"
                         : "bg-blue-100 text-blue-800"
@@ -155,7 +155,9 @@ export default function Portfolio() {
                   </span>
                 </div>
 
-                <p className="text-gray-600 mb-4">{project.description}</p>
+                <p className="text-gray-600 mb-4 max-md:text-sm">
+                  {project.description}
+                </p>
 
                 <div className="flex flex-wrap gap-2 mb-4">
                   {project.technologies.map((tech) => (
@@ -171,7 +173,7 @@ export default function Portfolio() {
                 <div className="flex justify-between items-center">
                   <a
                     href={`/projects/${project.id}`}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
+                    className="text-blue-600 hover:text-blue-800 font-medium max-md:text-sm"
                   >
                     View Details
                   </a>
@@ -181,7 +183,7 @@ export default function Portfolio() {
                       href={project.demoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
+                      className="text-sm bg-blue-600 hover:bg-blue-700 text-white  px-3 py-1 rounded"
                     >
                       Live Demo
                     </a>

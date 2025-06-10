@@ -69,7 +69,7 @@ export default function Services() {
           {services.map((service, index) => (
             <div
               key={service.title}
-              className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition-shadow duration-300"
+              className="bg-gray-50 rounded-xl p-6 max-md:p-4 hover:shadow-lg transition-shadow duration-300"
               data-aos="fade-up"
               data-aos-delay={index * 100}
             >
@@ -80,7 +80,7 @@ export default function Services() {
                   className="w-8 h-8"
                 />
               </div>
-              <h3 className="text-xl font-bold text-blue-800 mb-3">
+              <h3 className="text-xl max-md:text-sm font-bold text-blue-800 mb-3">
                 {service.title}
               </h3>
 
@@ -100,7 +100,9 @@ export default function Services() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span className="text-gray-700">{benefit}</span>
+                    <span className="text-gray-700 max-md:text-sm">
+                      {benefit}
+                    </span>
                   </li>
                 ))}
               </ul>

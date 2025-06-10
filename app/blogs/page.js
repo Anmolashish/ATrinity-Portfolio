@@ -95,7 +95,7 @@ export default function BlogIndex() {
 
                 <h2 className="text-xl font-bold text-gray-800 mb-2">
                   <Link
-                    href={`/blog/${post.slug}`}
+                    href={`/blogs/${post.slug}`}
                     className="hover:text-blue-600 transition-colors"
                   >
                     {post.title}
@@ -107,7 +107,7 @@ export default function BlogIndex() {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-500">{post.date}</span>
                   <Link
-                    href={`/blog/${post.slug}`}
+                    href={`/blogs/${post.slug}`}
                     className="text-blue-600 hover:text-blue-800 font-medium text-sm flex items-center"
                   >
                     Read More

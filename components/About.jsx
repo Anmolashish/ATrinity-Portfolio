@@ -147,7 +147,7 @@ export default function About() {
               <div className="space-y-6">
                 {features.map((feature, index) => (
                   <div key={index} className="flex">
-                    <div className="bg-blue-100 p-3 rounded-lg mr-4 flex-shrink-0">
+                    <div className="bg-blue-100 p-3 rounded-lg mr-4 flex justify-center items-center flex-shrink-0">
                       {feature.icon}
                     </div>
                     <div>
@@ -164,7 +164,7 @@ export default function About() {
         </div>
 
         {/* Skills Section */}
-        <div className="bg-white p-8 rounded-xl shadow-md max-w-3xl mx-auto">
+        <div className="bg-white p-8 rounded-xl shadow-md max-w-8xl mx-auto">
           <h3 className="text-2xl font-bold text-blue-800 mb-6 text-center">
             Our Skills
           </h3>

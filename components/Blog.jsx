@@ -13,7 +13,7 @@ const blogPosts = [
     date: "May 15, 2023",
     category: "Next.js",
     readTime: "5 min read",
-    image: "/images/blog/nextjs.jpg",
+    image: "/images/blogs/nextjs.jpg",
     author: {
       name: "Alex Johnson",
       role: "Frontend Developer",
@@ -28,7 +28,7 @@ const blogPosts = [
     date: "May 15, 2023",
     category: "Next.js",
     readTime: "5 min read",
-    image: "/images/blog/nextjs.jpg",
+    image: "/images/blogs/nextjs.jpg",
     author: {
       name: "Alex Johnson",
       role: "Frontend Developer",
@@ -43,7 +43,7 @@ const blogPosts = [
     date: "May 15, 2023",
     category: "Next.js",
     readTime: "5 min read",
-    image: "/images/blog/nextjs.jpg",
+    image: "/images/blogs/nextjs.jpg",
     author: {
       name: "Alex Johnson",
       role: "Frontend Developer",
@@ -58,7 +58,7 @@ const blogPosts = [
     date: "May 15, 2023",
     category: "Next.js",
     readTime: "5 min read",
-    image: "/images/blog/nextjs.jpg",
+    image: "/images/blogs/nextjs.jpg",
     author: {
       name: "Alex Johnson",
       role: "Frontend Developer",
@@ -73,7 +73,7 @@ const blogPosts = [
     date: "May 15, 2023",
     category: "Next.js",
     readTime: "5 min read",
-    image: "/images/blog/nextjs.jpg",
+    image: "/images/blogs/nextjs.jpg",
     author: {
       name: "Alex Johnson",
       role: "Frontend Developer",
@@ -220,7 +220,7 @@ export default function BlogIndex() {
 
                   <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
                     <Link
-                      href={`/blog/${post.slug}`}
+                      href={`/blogs/${post.slug}`}
                       className="hover:text-blue-600 transition-colors"
                     >
                       {post.title}
@@ -285,7 +285,7 @@ export default function BlogIndex() {
             <input
               type="email"
               placeholder="Your email address"
-              className="flex-grow px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 border border-blue-200"
+              className="flex-grow px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 border border-blue-200 bg-white"
               required
             />
             <button

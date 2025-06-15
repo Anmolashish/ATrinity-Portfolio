@@ -22,7 +22,6 @@ export default function Home() {
       <BlogIndex />
       <TestimonialsSection />
       <ContactSection />
-      <Footer />
     </div>
   );
 }

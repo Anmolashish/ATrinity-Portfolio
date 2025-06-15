@@ -34,7 +34,7 @@ export default function Header() {
               ].map((item) => (
                 <li key={item}>
                   <Link
-                    href={`#${item}`}
+                    href={`/#${item}`}
                     className="text-gray-700 hover:text-blue-600 transition-colors font-medium capitalize"
                   >
                     {item}
@@ -125,7 +125,7 @@ export default function Header() {
                 ].map((item) => (
                   <li key={item}>
                     <Link
-                      href={`#${item}`}
+                      href={`/#${item}`}
                       className="block text-gray-700 hover:text-blue-600 text-xl font-medium capitalize py-2 transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >

@@ -135,7 +135,7 @@ export default function LoginPage() {
             <form className="space-y-6" onSubmit={handleOtpSubmit}>
               <div>
                 <p className="text-sm text-gray-600 mb-4">
-                  We've sent a 6-digit OTP to {email}. Please check your inbox.
+                  Weve sent a 6-digit OTP to {email}. Please check your inbox.
                 </p>
                 <label
                   htmlFor="otp"

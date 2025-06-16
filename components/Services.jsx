@@ -2,7 +2,7 @@ export default function Services() {
   const services = [
     {
       title: "React.js Development",
-      icon: "/icons/react.svg",
+      icon: "react.webp",
       description:
         "We build fast, responsive, and interactive user interfaces with React. Our components are optimized for performance and reusability.",
       benefits: [
@@ -14,7 +14,7 @@ export default function Services() {
     },
     {
       title: "Next.js Solutions",
-      icon: "/icons/nextjs.svg",
+      icon: "next.webp",
       description:
         "Server-side rendering, static generation, and API routes - we leverage Next.js for SEO-friendly, high-performance applications.",
       benefits: [
@@ -26,7 +26,7 @@ export default function Services() {
     },
     {
       title: "SEO Optimization",
-      icon: "/icons/seo.svg",
+      icon: "seo.webp",
       description:
         "We don't just build websites - we ensure they're visible. Our SEO strategies help you rank higher and attract more visitors.",
       benefits: [

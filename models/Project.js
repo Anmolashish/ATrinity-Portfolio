@@ -21,6 +21,6 @@ const ProjectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Use existing collection if it has a different name
+// Prevent model overwrite issues in dev
 export default mongoose.models.Project ||
-  mongoose.model("Project", ProjectSchema, "projects");
+  mongoose.model("Project", ProjectSchema);

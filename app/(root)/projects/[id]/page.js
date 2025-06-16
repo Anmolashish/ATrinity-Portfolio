@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,65 +8,114 @@ import Image from "next/image";
 export default function ProjectDetails() {
   const params = useParams();
   const id = params?.id;
-
   const [project, setProject] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeImage, setActiveImage] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
 
-  const projects = [
-    {
-      id: 1,
-      title: "E-commerce Platform",
-      client: "FashionHub",
-      type: "commercial",
-      technologies: ["React", "Next.js", "Node.js", "MongoDB"],
-      description:
-        "A full-featured e-commerce platform with product filtering, cart functionality, and secure checkout. The platform was built with a focus on performance and user experience, resulting in a 30% increase in conversion rates for the client.",
-      challenges:
-        "The main challenge was handling high traffic during peak shopping periods. We implemented server-side rendering with Next.js and optimized database queries to ensure fast page loads even during traffic spikes. We also added a robust caching layer to reduce server load.",
-      images: [
-        "/images/projects/ecommerce.jpg",
-        "/images/projects/ecommerce-2.jpg",
-        "/images/projects/ecommerce-3.jpg",
-      ],
-      date: "May 2023",
-      category: "E-commerce",
-      demoUrl: "#",
-      githubUrl: "#",
-    },
-    {
-      id: 2,
-      title: "University Portal",
-      client: "College Project",
-      type: "academic",
-      technologies: ["React", "Firebase", "Material UI"],
-      description:
-        "A student portal for managing courses, assignments, and grades with real-time updates. The system features role-based access control for students, professors, and administrators.",
-      challenges:
-        "The challenge was implementing real-time updates across different user roles while maintaining data security. We used Firebase's real-time database and implemented strict security rules to ensure data integrity and privacy.",
-      images: [
-        "/images/projects/university.jpg",
-        "/images/projects/university-2.jpg",
-        "/images/projects/university-3.jpg",
-      ],
-      date: "March 2023",
-      category: "Education",
-      demoUrl: "#",
-      githubUrl: "#",
-    },
-  ];
+  // Truncate text function
+  const truncateText = (text, maxLength = 150) => {
+    if (!text) return "";
+    if (text.length <= maxLength || showFullDescription) return text;
+    return `${text.substring(0, maxLength)}...`;
+  };
 
   useEffect(() => {
+    const fetchProject = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/projects/${id}`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setProject(data);
+      } catch (err) {
+        console.error("Error fetching project:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (id) {
-      const selectedProject = projects.find((p) => p.id === parseInt(id));
-      setProject(selectedProject);
+      fetchProject();
     }
   }, [id]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Image Skeleton */}
+            <div className="lg:w-1/2 space-y-4">
+              <div className="bg-gray-200 rounded-xl h-96 w-full animate-pulse"></div>
+              <div className="flex gap-2">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-gray-200 w-20 h-20 rounded-md animate-pulse"
+                  ></div>
+                ))}
+              </div>
+            </div>
+
+            {/* Content Skeleton */}
+            <div className="lg:w-1/2 space-y-4">
+              <div className="bg-gray-200 h-10 w-3/4 rounded animate-pulse"></div>
+              <div className="bg-gray-200 h-6 w-1/4 rounded animate-pulse"></div>
+              <div className="grid grid-cols-2 gap-4">
+                {[...Array(6)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-gray-200 h-4 rounded animate-pulse"
+                  ></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">
+            Error Loading Project
+          </h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Link
+            href="/#portfolio"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg inline-block"
+          >
+            Back to Portfolio
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!project) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        Loading...
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            Project Not Found
+          </h2>
+          <Link
+            href="/#portfolio"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg inline-block"
+          >
+            Back to Portfolio
+          </Link>
+        </div>
       </div>
     );
   }
@@ -76,7 +124,10 @@ export default function ProjectDetails() {
     <>
       <Head>
         <title>{project.title} | CodeCrew</title>
-        <meta name="description" content={project.description} />
+        <meta
+          name="description"
+          content={truncateText(project.description, 100)}
+        />
       </Head>
 
       <main className="min-h-screen bg-gray-50 py-12">
@@ -84,17 +135,25 @@ export default function ProjectDetails() {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Project Gallery */}
             <div className="lg:w-1/2">
-              <div className="rounded-xl overflow-hidden mb-4">
-                <Image
-                  src={project.images[activeImage]}
-                  alt={project.title}
-                  width={800}
-                  height={500}
-                  className="w-full h-auto object-cover"
-                />
+              <div className="rounded-xl overflow-hidden mb-4 bg-gray-100 aspect-video flex items-center justify-center">
+                {project.images?.[activeImage] ? (
+                  <img
+                    src={project.images[activeImage]}
+                    alt={project.title}
+                    width={800}
+                    height={450}
+                    className="w-full h-auto object-cover"
+                    priority
+                    onError={(e) => {
+                      e.target.src = "/images/default-project.jpg";
+                    }}
+                  />
+                ) : (
+                  <div className="text-gray-400">No image available</div>
+                )}
               </div>
               <div className="flex gap-2">
-                {project.images.map((image, index) => (
+                {project.images?.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setActiveImage(index)}
@@ -102,15 +161,22 @@ export default function ProjectDetails() {
                       activeImage === index
                         ? "border-blue-600"
                         : "border-transparent"
-                    }`}
+                    } bg-gray-100 flex items-center justify-center`}
                   >
-                    <Image
-                      src={image}
-                      alt={`Thumbnail ${index + 1}`}
-                      width={80}
-                      height={80}
-                      className="w-full h-full object-cover"
-                    />
+                    {image ? (
+                      <img
+                        src={image}
+                        alt={`Thumbnail ${index + 1}`}
+                        width={80}
+                        height={80}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          "https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg";
+                        }}
+                      />
+                    ) : (
+                      <div className="text-xs text-gray-400">No image</div>
+                    )}
                   </button>
                 ))}
               </div>
@@ -131,7 +197,9 @@ export default function ProjectDetails() {
                 >
                   {project.type === "commercial"
                     ? "Client Project"
-                    : "College Project"}
+                    : project.type === "academic"
+                    ? "Academic Project"
+                    : "Personal Project"}
                 </span>
               </div>
 
@@ -139,15 +207,21 @@ export default function ProjectDetails() {
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div>
                   <span className="text-gray-600 font-medium">Client:</span>
-                  <span className="ml-2 text-gray-800">{project.client}</span>
+                  <span className="ml-2 text-gray-800">
+                    {project.client || "N/A"}
+                  </span>
                 </div>
                 <div>
                   <span className="text-gray-600 font-medium">Date:</span>
-                  <span className="ml-2 text-gray-800">{project.date}</span>
+                  <span className="ml-2 text-gray-800">
+                    {project.date || "N/A"}
+                  </span>
                 </div>
                 <div>
                   <span className="text-gray-600 font-medium">Category:</span>
-                  <span className="ml-2 text-gray-800">{project.category}</span>
+                  <span className="ml-2 text-gray-800">
+                    {project.category || "N/A"}
+                  </span>
                 </div>
               </div>
 
@@ -157,7 +231,7 @@ export default function ProjectDetails() {
                   Technologies Used
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {project.technologies.map((tech) => (
+                  {project.technologies?.map((tech) => (
                     <span
                       key={tech}
                       className="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm"
@@ -168,21 +242,33 @@ export default function ProjectDetails() {
                 </div>
               </div>
 
-              {/* Description */}
+              {/* Description with Read More */}
               <div className="mb-6">
                 <h3 className="text-xl font-semibold text-gray-800 mb-2">
                   Project Description
                 </h3>
-                <p className="text-gray-600">{project.description}</p>
+                <p className="text-gray-600 mb-2">
+                  {truncateText(project.description)}
+                </p>
+                {project.description?.length > 150 && (
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    {showFullDescription ? "Show Less" : "Read More"}
+                  </button>
+                )}
               </div>
 
               {/* Challenges */}
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                  Challenges & Solutions
-                </h3>
-                <p className="text-gray-600">{project.challenges}</p>
-              </div>
+              {project.challenges && (
+                <div className="mb-8">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                    Challenges & Solutions
+                  </h3>
+                  <p className="text-gray-600">{project.challenges}</p>
+                </div>
+              )}
 
               {/* CTA Buttons */}
               <div className="flex flex-wrap gap-4">

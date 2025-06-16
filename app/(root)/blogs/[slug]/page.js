@@ -1,81 +1,97 @@
-// pages/blog/[slug].js
 "use client";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 
-// Sample blog data (in a real app, you'd fetch this from an API or CMS)
-const blogPosts = [
-  {
-    slug: "why-nextjs-is-the-future",
-    title: "Why Next.js is the Future of React Development",
-    date: "May 15, 2023",
-    category: "Next.js",
-    readTime: "5 min read",
-    image: "/images/blog/nextjs.jpg",
-    content: `
-      <p>Next.js has emerged as one of the most popular React frameworks, and for good reason. It solves many of the challenges that come with building production-ready React applications.</p>
-      
-      <h2>The Power of Server-Side Rendering</h2>
-      <p>One of the biggest advantages of Next.js is its built-in support for server-side rendering (SSR). Unlike traditional React apps that render entirely in the browser, Next.js can render pages on the server, delivering fully formed HTML to the client.</p>
-      
-      <p>This approach offers several benefits:</p>
-      <ul>
-        <li>Improved SEO as search engines can crawl your content more effectively</li>
-        <li>Faster initial page loads, especially on slower devices or networks</li>
-        <li>Better social media sharing with proper meta tags</li>
-      </ul>
-      
-      <h2>Static Site Generation for Blazing Fast Performance</h2>
-      <p>Next.js also supports static site generation (SSG), where pages are pre-rendered at build time. This is perfect for content that doesn't change frequently, like blog posts or marketing pages.</p>
-      
-      <p>With SSG, you get:</p>
-      <ul>
-        <li>Instant page loads since HTML is already generated</li>
-        <li>Reduced server load and costs</li>
-        <li>Excellent performance scores out of the box</li>
-      </ul>
-      
-      <h2>API Routes for Full-Stack Applications</h2>
-      <p>Next.js includes API routes, allowing you to build your frontend and backend in the same project. This is perfect for:</p>
-      <ul>
-        <li>Handling form submissions</li>
-        <li>Creating custom endpoints</li>
-        <li>Integrating with databases or external APIs</li>
-      </ul>
-      
-      <p>The combination of these features makes Next.js an incredibly versatile framework that can handle everything from simple static sites to complex web applications.</p>
-    `,
-    author: {
-      name: "Alex Johnson",
-      role: "Frontend Developer",
-      image: "/images/team/alex.jpg",
-    },
-  },
-  // Add other blog posts here...
-];
-
 export default function BlogPost() {
   const params = useParams();
   const slug = params?.slug;
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const post = blogPosts.find((p) => p.slug === slug);
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/blogs/${slug}`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setPost(data);
+      } catch (err) {
+        console.error("Error fetching blog post:", err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) {
+      fetchPost();
+    }
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">
+            Error Loading Post
+          </h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Link
+            href="/blogs"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg inline-block"
+          >
+            Back to Blog
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-xl">Loading...</p>
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            Post Not Found
+          </h2>
+          <Link
+            href="/blogs"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg inline-block"
+          >
+            Back to Blog
+          </Link>
+        </div>
       </div>
     );
   }
+
+  // Truncate content for meta description
+  const metaDescription = post.content
+    .replace(/<[^>]*>/g, "") // Remove HTML tags
+    .substring(0, 160);
 
   return (
     <>
       <Head>
         <title>{post.title} | CodeCrew Blog</title>
-        <meta name="description" content={post.content.substring(0, 160)} />
+        <meta name="description" content={metaDescription} />
       </Head>
 
       <article className="max-w-4xl mx-auto px-6 py-16">
@@ -91,30 +107,75 @@ export default function BlogPost() {
             {post.title}
           </h1>
           <div className="flex items-center space-x-4">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden">
-              <Image
-                src={post.author.image}
-                alt={post.author.name}
-                fill
-                className="object-cover"
-              />
+            <div className="relative w-10 h-10 rounded-full overflow-hidden bg-gray-100">
+              {post.author?.image ? (
+                <img
+                  src={post.author.image}
+                  alt={post.author.name || "Author"}
+                  className="object-cover h-full w-full"
+                  onError={(e) => {
+                    e.target.src = "/images/default-avatar.jpg";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+              )}
             </div>
             <div>
-              <p className="font-medium text-gray-900">{post.author.name}</p>
+              <p className="font-medium text-gray-900">
+                {post.author?.name || "Unknown Author"}
+              </p>
               <p className="text-sm text-gray-500">{post.date}</p>
             </div>
           </div>
         </header>
 
         {/* Featured Image */}
-        <div className="relative h-96 rounded-xl overflow-hidden mb-12">
-          <Image
-            src={post.image}
-            alt={post.title}
-            fill
-            className="object-cover"
-            priority
-          />
+        <div className="relative aspect-video rounded-xl overflow-hidden mb-12 bg-gray-100">
+          {post.image ? (
+            <img
+              src={post.image}
+              alt={post.title}
+              fill
+              className="object-cover h-full w-full"
+              priority
+              onError={(e) => {
+                e.target.src = "/images/default-blog.jpg";
+              }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+          )}
         </div>
 
         {/* Post Content */}
@@ -126,21 +187,43 @@ export default function BlogPost() {
         {/* Author Bio */}
         <div className="mt-16 pt-8 border-t border-gray-200">
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6">
-            <div className="relative w-20 h-20 rounded-full overflow-hidden flex-shrink-0">
-              <Image
-                src={post.author.image}
-                alt={post.author.name}
-                fill
-                className="object-cover"
-              />
+            <div className="relative w-20 h-20 rounded-full overflow-hidden flex-shrink-0 bg-gray-100">
+              {post.author?.image ? (
+                <img
+                  src={post.author.image}
+                  alt={post.author.name || "Author"}
+                  fill
+                  className="object-cover"
+                  onError={(e) => {
+                    e.target.src = "/images/default-avatar.jpg";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-8 w-8"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
+              )}
             </div>
             <div>
               <h3 className="text-lg font-medium text-gray-900">
-                About {post.author.name}
+                About {post.author?.name || "the author"}
               </h3>
               <p className="text-gray-600 mt-2">
-                {post.author.role} at CodeCrew with expertise in modern web
-                technologies.
+                {post.author?.role || "Contributor"} at CodeCrew with expertise
+                in modern web technologies.
               </p>
             </div>
           </div>

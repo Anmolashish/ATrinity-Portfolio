@@ -21,7 +21,7 @@ export default function AdminDashboard() {
 
         const [projectsRes, blogRes] = await Promise.all([
           fetch("/api/projects"),
-          fetch("/api/blog"),
+          fetch("/api/blogs"),
         ]);
 
         // Check for failed responses
@@ -79,7 +79,8 @@ export default function AdminDashboard() {
     setIsLoading(true);
 
     try {
-      const endpoint = activeTab === "projects" ? "/api/projects" : "/api/blog";
+      const endpoint =
+        activeTab === "projects" ? "/api/projects" : "/api/blogs";
       const method = editingItem ? "PUT" : "POST";
 
       // Prepare data with proper formatting
@@ -107,7 +108,7 @@ export default function AdminDashboard() {
       // Refresh data
       const [projectsRes, blogRes] = await Promise.all([
         fetch("/api/projects"),
-        fetch("/api/blog"),
+        fetch("/api/blogs"),
       ]);
 
       const projectsData = await projectsRes.json();
@@ -145,7 +146,8 @@ export default function AdminDashboard() {
 
     setIsLoading(true);
     try {
-      const endpoint = activeTab === "projects" ? "/api/projects" : "/api/blog";
+      const endpoint =
+        activeTab === "projects" ? "/api/projects" : "/api/blogs";
       const response = await fetch(endpoint, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -157,7 +159,7 @@ export default function AdminDashboard() {
       // Refresh data
       const [projectsRes, blogRes] = await Promise.all([
         fetch("/api/projects"),
-        fetch("/api/blog"),
+        fetch("/api/blogs"),
       ]);
 
       const projectsData = await projectsRes.json();

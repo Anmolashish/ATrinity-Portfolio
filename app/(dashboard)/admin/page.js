@@ -141,6 +141,19 @@ export default function AdminDashboard() {
     setFormData(editableData);
   };
 
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      router.push("/admin/login");
+    } catch (err) {
+      console.error("Logout error:", err);
+      setError("Failed to logout");
+    }
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
@@ -236,7 +249,10 @@ export default function AdminDashboard() {
                 </Link>
               </li>
               <li>
-                <button className="hover:text-blue-200 transition-colors">
+                <button
+                  onClick={handleLogout}
+                  className="hover:text-blue-200 transition-colors"
+                >
                   Logout
                 </button>
               </li>

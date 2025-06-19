@@ -9,6 +9,7 @@ export default function BlogIndex() {
   const [error, setError] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
+  const maxSlides = 4; // Maximum 4 carousel slides
   const postsPerSlide = 3;
 
   // Fetch blog posts from API
@@ -23,7 +24,11 @@ export default function BlogIndex() {
         }
 
         const data = await response.json();
-        setBlogPosts(data);
+        // Sort by date (newest first)
+        const sortedData = data.sort(
+          (a, b) => new Date(b.date) - new Date(a.date)
+        );
+        setBlogPosts(sortedData);
       } catch (err) {
         console.error("Error fetching blog posts:", err);
         setError(err.message);
@@ -46,7 +51,11 @@ export default function BlogIndex() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const totalSlides = Math.ceil(blogPosts.length / postsPerSlide);
+  // Calculate total slides, limited to maxSlides
+  const totalSlides = Math.min(
+    Math.ceil(blogPosts.length / postsPerSlide),
+    maxSlides
+  );
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev === totalSlides - 1 ? 0 : prev + 1));
@@ -56,61 +65,29 @@ export default function BlogIndex() {
     setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
   };
 
+  // Get posts for current slide (newest first)
   const visiblePosts = isMobile
-    ? blogPosts
+    ? blogPosts.slice(0, postsPerSlide * maxSlides) // Show first 12 posts on mobile
     : blogPosts.slice(
         currentSlide * postsPerSlide,
         (currentSlide + 1) * postsPerSlide
       );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-16">
-            <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-4">
-              Latest Articles
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              CodeCrew <span className="text-blue-600">Blog</span>
-            </h1>
-            <div className="flex justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              CodeCrew <span className="text-blue-600">Blog</span>
-            </h1>
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md mx-auto">
-              <p>Error loading blog posts: {error}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="mt-2 text-blue-600 hover:text-blue-800"
-              >
-                Try again
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Function to truncate excerpt
+  const truncateExcerpt = (text, maxLength = 100) => {
+    if (!text) return "";
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12">
+    <div
+      className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12"
+      id="blog"
+    >
       <div className="container mx-auto px-4 sm:px-6">
-        {/* Page Header */}
-        <div className="text-center mb-16 animate-fade-in">
+        {/* Page Header - Always visible */}
+        <div className="text-center mb-16">
           <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-4">
             Latest Articles
           </span>
@@ -123,10 +100,30 @@ export default function BlogIndex() {
           </p>
         </div>
 
-        {/* Blog Posts */}
-        {blogPosts.length > 0 ? (
+        {/* Loading state */}
+        {loading && (
+          <div className="flex justify-center mb-16">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md mx-auto mb-16 text-center">
+            <p>Error loading blog posts: {error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-2 text-blue-600 hover:text-blue-800"
+            >
+              Try again
+            </button>
+          </div>
+        )}
+
+        {/* Blog Posts - Only render when not loading and no error */}
+        {!loading && !error && blogPosts.length > 0 && (
           <div className="relative mb-16">
-            {!isMobile && blogPosts.length > postsPerSlide && (
+            {!isMobile && totalSlides > 1 && (
               <>
                 <button
                   onClick={prevSlide}
@@ -187,16 +184,18 @@ export default function BlogIndex() {
                 >
                   {/* Post Image */}
                   <div className="relative h-56 overflow-hidden">
-                    <img
+                    <Image
                       src={post.image || "/images/blogs/default.jpg"}
                       alt={post.title}
                       fill
                       className="object-cover hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      priority
+                      priority={true}
                       onError={(e) => {
-                        e.target.src = "/images/blogs/default.jpg";
+                        e.currentTarget.src = "/images/blogs/default.jpg";
                       }}
+                      placeholder="blur"
+                      blurDataURL="data:image/png;base64,..."
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                   </div>
@@ -221,21 +220,26 @@ export default function BlogIndex() {
                       </Link>
                     </h2>
 
-                    <p className="text-gray-600 mb-5">{post.excerpt}</p>
+                    <p className="text-gray-600 mb-5">
+                      {truncateExcerpt(post.excerpt)}
+                    </p>
 
                     <div className="flex items-center justify-between mt-6">
                       <div className="flex items-center">
                         <div className="relative w-10 h-10 rounded-full overflow-hidden mr-3">
-                          <img
+                          <Image
                             src={
                               post.author?.image || "/images/team/default.jpg"
                             }
                             alt={post.author?.name || "Author"}
                             fill
-                            className="object-cover"
+                            className="object-cover rounded-full"
+                            sizes="(max-width: 768px) 50px, 10vw"
                             onError={(e) => {
-                              e.target.src = "/images/team/default.jpg";
+                              e.currentTarget.src = "/images/team/default.jpg";
                             }}
+                            placeholder="blur"
+                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
                           />
                         </div>
                         <div>
@@ -255,7 +259,7 @@ export default function BlogIndex() {
             </div>
 
             {/* Slide Indicators (Desktop only) */}
-            {!isMobile && blogPosts.length > postsPerSlide && (
+            {!isMobile && totalSlides > 1 && (
               <div className="flex justify-center mt-8 space-x-2">
                 {Array.from({ length: totalSlides }).map((_, index) => (
                   <button
@@ -269,21 +273,21 @@ export default function BlogIndex() {
                 ))}
               </div>
             )}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No blog posts found</p>
-            <Link
-              href="/"
-              className="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg"
-            >
-              Return Home
-            </Link>
+
+            {/* View More Button */}
+            <div className="text-center mt-8">
+              <Link
+                href="/blogs"
+                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-lg transition-colors"
+              >
+                View All Articles
+              </Link>
+            </div>
           </div>
         )}
 
-        {/* Newsletter Signup */}
-        <div className="mt-16 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-2xl p-8 text-center w-full shadow-sm animate-fade-in-up">
+        {/* Newsletter Signup - Always visible */}
+        <div className="mt-16 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-2xl p-8 text-center w-full shadow-sm">
           <h3 className="text-2xl font-bold text-blue-800 mb-3">
             Stay Updated
           </h3>
@@ -312,30 +316,6 @@ export default function BlogIndex() {
       </div>
 
       <style jsx global>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fadeIn 0.6s ease-out forwards;
-        }
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out forwards;
-        }
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }

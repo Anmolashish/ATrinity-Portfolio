@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function AdminDashboard() {
-  // State initialization with proper types
+  const router = useRouter();
   const [products, setProducts] = useState([]);
   const [blogPosts, setBlogPosts] = useState([]);
   const [activeTab, setActiveTab] = useState("projects");
@@ -24,14 +25,12 @@ export default function AdminDashboard() {
           fetch("/api/blogs"),
         ]);
 
-        // Check for failed responses
         if (!projectsRes.ok) throw new Error("Failed to fetch projects");
         if (!blogRes.ok) throw new Error("Failed to fetch blog posts");
 
         const projectsData = await projectsRes.json();
         const blogData = await blogRes.json();
 
-        // Validate and set data
         setProducts(Array.isArray(projectsData) ? projectsData : []);
         setBlogPosts(Array.isArray(blogData) ? blogData : []);
       } catch (err) {
@@ -74,6 +73,60 @@ export default function AdminDashboard() {
     }));
   };
 
+  const handleFileUpload = async (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", files[0]);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload image");
+      }
+
+      const { url } = await response.json();
+
+      if (activeTab === "projects") {
+        setFormData((prev) => ({
+          ...prev,
+          images: [...(prev.images || []), url],
+        }));
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          image: url,
+        }));
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRemoveImage = (index) => {
+    if (activeTab === "projects") {
+      setFormData((prev) => ({
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        image: undefined,
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -83,16 +136,12 @@ export default function AdminDashboard() {
         activeTab === "projects" ? "/api/projects" : "/api/blogs";
       const method = editingItem ? "PUT" : "POST";
 
-      // Prepare data with proper formatting
       const payload = { ...formData };
       if (activeTab === "projects") {
         if (typeof payload.technologies === "string") {
           payload.technologies = payload.technologies
             .split(",")
             .map((t) => t.trim());
-        }
-        if (typeof payload.images === "string") {
-          payload.images = payload.images.split(",").map((i) => i.trim());
         }
       }
 
@@ -102,8 +151,9 @@ export default function AdminDashboard() {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(`Failed to ${editingItem ? "update" : "create"} item`);
+      }
 
       // Refresh data
       const [projectsRes, blogRes] = await Promise.all([
@@ -128,14 +178,10 @@ export default function AdminDashboard() {
 
   const handleEdit = (item) => {
     setEditingItem(item);
-    // Prepare data for editing
     const editableData = { ...item };
     if (activeTab === "projects") {
       if (Array.isArray(editableData.technologies)) {
         editableData.technologies = editableData.technologies.join(", ");
-      }
-      if (Array.isArray(editableData.images)) {
-        editableData.images = editableData.images.join(", ");
       }
     }
     setFormData(editableData);
@@ -169,7 +215,6 @@ export default function AdminDashboard() {
 
       if (!response.ok) throw new Error("Failed to delete item");
 
-      // Refresh data
       const [projectsRes, blogRes] = await Promise.all([
         fetch("/api/projects"),
         fetch("/api/blogs"),
@@ -188,7 +233,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // Render loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -197,7 +241,6 @@ export default function AdminDashboard() {
     );
   }
 
-  // Render error state
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -215,7 +258,6 @@ export default function AdminDashboard() {
     );
   }
 
-  // Get current data with array fallback
   const currentData =
     activeTab === "projects"
       ? Array.isArray(products)
@@ -227,7 +269,6 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Admin Header */}
       <header className="bg-blue-800 text-white shadow-md">
         <div className="container mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center">
@@ -262,7 +303,6 @@ export default function AdminDashboard() {
       </header>
 
       <div className="container mx-auto px-6 py-8">
-        {/* Dashboard Tabs */}
         <div className="flex border-b border-gray-200 mb-8">
           <button
             className={`px-4 py-2 font-medium ${
@@ -286,7 +326,6 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* Edit/Create Form */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4">
             {editingItem ? "Edit" : "Add New"}{" "}
@@ -294,7 +333,6 @@ export default function AdminDashboard() {
           </h2>
           <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Common Fields */}
               <div>
                 <label className="block text-gray-700 mb-2">Title*</label>
                 <input
@@ -309,7 +347,6 @@ export default function AdminDashboard() {
 
               {activeTab === "projects" ? (
                 <>
-                  {/* Project Form Fields */}
                   <div>
                     <label className="block text-gray-700 mb-2">Client</label>
                     <input
@@ -392,18 +429,33 @@ export default function AdminDashboard() {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-gray-700 mb-2">
-                      Images (comma separated URLs)*
-                    </label>
+                    <label className="block text-gray-700 mb-2">Images*</label>
                     <input
-                      type="text"
-                      name="images"
-                      value={formData.images || ""}
-                      onChange={handleArrayInputChange}
-                      className="w-full px-4 py-2 border rounded-lg"
-                      placeholder="/images/projects/project1.jpg, /images/projects/project2.jpg"
-                      required
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="w-full px-4 py-2 border rounded-lg mb-2"
+                      disabled={isLoading}
                     />
+                    <div className="grid grid-cols-3 gap-2 mt-2">
+                      {formData.images?.map((img, index) => (
+                        <div key={index} className="relative group">
+                          <img
+                            src={img}
+                            alt={`Preview ${index}`}
+                            className="h-24 w-full object-cover rounded"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(index)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-gray-700 mb-2">
@@ -433,7 +485,6 @@ export default function AdminDashboard() {
                 </>
               ) : (
                 <>
-                  {/* Blog Form Fields */}
                   <div>
                     <label className="block text-gray-700 mb-2">
                       Category*
@@ -485,16 +536,31 @@ export default function AdminDashboard() {
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-gray-700 mb-2">
-                      Image URL*
+                      Upload Image*
                     </label>
                     <input
-                      type="text"
-                      name="image"
-                      value={formData.image || ""}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 border rounded-lg"
-                      required
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="w-full px-4 py-2 border rounded-lg mb-2"
+                      disabled={isLoading}
                     />
+                    {formData.image && (
+                      <div className="relative group mt-2">
+                        <img
+                          src={formData.image}
+                          alt="Preview"
+                          className="h-24 object-cover rounded"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(0)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-gray-700 mb-2">
@@ -522,15 +588,53 @@ export default function AdminDashboard() {
                   </div>
                   <div>
                     <label className="block text-gray-700 mb-2">
-                      Author Image URL
+                      Author Image
                     </label>
                     <input
-                      type="text"
-                      name="image"
-                      value={formData.author?.image || ""}
-                      onChange={handleAuthorChange}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              author: {
+                                ...prev.author,
+                                image: event.target.result,
+                              },
+                            }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
                       className="w-full px-4 py-2 border rounded-lg"
                     />
+                    {formData.author?.image && (
+                      <div className="relative group mt-2">
+                        <img
+                          src={formData.author.image}
+                          alt="Author Preview"
+                          className="h-24 object-cover rounded"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setFormData((prev) => ({
+                              ...prev,
+                              author: {
+                                ...prev.author,
+                                image: undefined,
+                              },
+                            }));
+                          }}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-gray-700 mb-2">Excerpt</label>
@@ -586,7 +690,6 @@ export default function AdminDashboard() {
           </form>
         </div>
 
-        {/* Data Table */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">

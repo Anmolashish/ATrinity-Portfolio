@@ -1,36 +1,45 @@
+// app/api/auth/send-otp/route.js
 import { generateOTP, storeOTP } from "@/lib/otp";
 import { sendEmail } from "@/lib/email";
+import { NextResponse } from "next/server";
 
 export async function POST(request) {
-  const { email } = await request.json();
-
-  // Validate email (add your admin emails check here)
-  const allowedEmails = ["atrinity9928@gmail.com"]; // Add your admin emails
-  if (!allowedEmails.includes(email)) {
-    return new Response(
-      JSON.stringify({ message: "Unauthorized email address" }),
-      { status: 401 }
-    );
-  }
-
-  const otp = generateOTP();
-  await storeOTP(email, otp);
-
   try {
+    const { email } = await request.json();
+    console.log("Received email:", email); // Debug
+
+    if (!email) {
+      return NextResponse.json(
+        { message: "Email is required" },
+        { status: 400 }
+      );
+    }
+
+    const otp = generateOTP();
+    console.log("Generated OTP:", otp); // Debug
+
+    // THIS IS THE CRUCIAL LINE THAT MUST EXECUTE
+    await storeOTP(email, otp);
+    console.log("OTP stored successfully"); // Debug
+
+    // Send email (in development, just log it)
+
     await sendEmail({
       to: email,
-      subject: "Your Admin Login OTP",
+      subject: "Your OTP Code",
       text: `Your OTP code is: ${otp}`,
       html: `<p>Your OTP code is: <strong>${otp}</strong></p>`,
     });
 
-    return new Response(JSON.stringify({ message: "OTP sent successfully" }), {
-      status: 200,
-    });
+    return NextResponse.json(
+      { message: "OTP sent successfully" },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error sending OTP:", error);
-    return new Response(JSON.stringify({ message: "Failed to send OTP" }), {
-      status: 500,
-    });
+    console.error("Error in send-otp:", error);
+    return NextResponse.json(
+      { message: "Failed to send OTP" },
+      { status: 500 }
+    );
   }
 }

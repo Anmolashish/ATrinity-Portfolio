@@ -140,19 +140,20 @@ export default function Portfolio() {
                 className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
               >
                 <div className="h-48 relative overflow-hidden">
-                  <img
+                  import Image from 'next/image'; // In your component:
+                  <Image
                     src={
                       project.image ||
                       project.images?.[0] ||
-                      "https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg"
+                      "/default-project.jpg"
                     }
                     alt={project.title}
                     fill
-                    className="object-cover hover:scale-105 transition-transform duration-500 h-full w-full"
-                    onError={(e) => {
-                      e.target.src =
-                        "https://coffective.com/wp-content/uploads/2018/06/default-featured-image.png.jpg";
-                    }}
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    // Optional: Add blur placeholder
+                    placeholder="blur"
+                    blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
                   />
                 </div>
 

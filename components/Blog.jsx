@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import { useState, useEffect, useCallback } from "react";
 
 export default function BlogIndex() {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -9,75 +10,59 @@ export default function BlogIndex() {
   const [error, setError] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
-  const maxSlides = 4; // Maximum 4 carousel slides
+  const maxSlides = 4;
   const postsPerSlide = 3;
 
-  // Fetch blog posts from API
   useEffect(() => {
     const fetchBlogPosts = async () => {
       try {
         setLoading(true);
         const response = await fetch("/api/blogs");
-
-        if (!response.ok) {
+        if (!response.ok)
           throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
         const data = await response.json();
-        // Sort by date (newest first)
         const sortedData = data.sort(
           (a, b) => new Date(b.date) - new Date(a.date)
         );
         setBlogPosts(sortedData);
       } catch (err) {
-        console.error("Error fetching blog posts:", err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-
     fetchBlogPosts();
   }, []);
 
-  // Handle responsive behavior
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Calculate total slides, limited to maxSlides
   const totalSlides = Math.min(
     Math.ceil(blogPosts.length / postsPerSlide),
     maxSlides
   );
 
-  const nextSlide = () => {
+  const nextSlide = () =>
     setCurrentSlide((prev) => (prev === totalSlides - 1 ? 0 : prev + 1));
-  };
-
-  const prevSlide = () => {
+  const prevSlide = () =>
     setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
-  };
 
-  // Get posts for current slide (newest first)
   const visiblePosts = isMobile
-    ? blogPosts.slice(0, postsPerSlide * maxSlides) // Show first 12 posts on mobile
+    ? blogPosts.slice(0, postsPerSlide * maxSlides)
     : blogPosts.slice(
         currentSlide * postsPerSlide,
         (currentSlide + 1) * postsPerSlide
       );
 
-  // Function to truncate excerpt
   const truncateExcerpt = (text, maxLength = 100) => {
     if (!text) return "";
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
+    return text.length <= maxLength
+      ? text
+      : text.substring(0, maxLength) + "...";
   };
 
   return (
@@ -86,7 +71,6 @@ export default function BlogIndex() {
       id="blog"
     >
       <div className="container mx-auto px-4 sm:px-6">
-        {/* Page Header - Always visible */}
         <div className="text-center mb-16">
           <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-4">
             Latest Articles
@@ -100,14 +84,12 @@ export default function BlogIndex() {
           </p>
         </div>
 
-        {/* Loading state */}
         {loading && (
           <div className="flex justify-center mb-16">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
           </div>
         )}
 
-        {/* Error state */}
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md mx-auto mb-16 text-center">
             <p>Error loading blog posts: {error}</p>
@@ -120,7 +102,6 @@ export default function BlogIndex() {
           </div>
         )}
 
-        {/* Blog Posts - Only render when not loading and no error */}
         {!loading && !error && blogPosts.length > 0 && (
           <div className="relative mb-16">
             {!isMobile && totalSlides > 1 && (
@@ -182,7 +163,6 @@ export default function BlogIndex() {
                       : "transform hover:-translate-y-1"
                   }`}
                 >
-                  {/* Post Image */}
                   <div className="relative h-56 overflow-hidden">
                     <Image
                       src={post.image || "/images/blogs/default.jpg"}
@@ -190,17 +170,12 @@ export default function BlogIndex() {
                       fill
                       className="object-cover hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      priority={true}
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/blogs/default.jpg";
-                      }}
+                      priority
                       placeholder="blur"
-                      blurDataURL="data:image/png;base64,..."
+                      blurDataURL="/images/blogs/default.jpg"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                   </div>
-
-                  {/* Post Content */}
                   <div className="p-6">
                     <div className="flex justify-between items-center mb-3">
                       <span className="text-xs font-semibold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
@@ -210,7 +185,6 @@ export default function BlogIndex() {
                         {post.readTime}
                       </span>
                     </div>
-
                     <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight">
                       <Link
                         href={`/blogs/${post.slug}`}
@@ -219,11 +193,9 @@ export default function BlogIndex() {
                         {post.title}
                       </Link>
                     </h2>
-
                     <p className="text-gray-600 mb-5">
                       {truncateExcerpt(post.excerpt)}
                     </p>
-
                     <div className="flex items-center justify-between mt-6">
                       <div className="flex items-center">
                         <div className="relative w-10 h-10 rounded-full overflow-hidden mr-3">
@@ -235,11 +207,8 @@ export default function BlogIndex() {
                             fill
                             className="object-cover rounded-full"
                             sizes="(max-width: 768px) 50px, 10vw"
-                            onError={(e) => {
-                              e.currentTarget.src = "/images/team/default.jpg";
-                            }}
                             placeholder="blur"
-                            blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+                            blurDataURL="/images/team/default.jpg"
                           />
                         </div>
                         <div>
@@ -258,7 +227,6 @@ export default function BlogIndex() {
               ))}
             </div>
 
-            {/* Slide Indicators (Desktop only) */}
             {!isMobile && totalSlides > 1 && (
               <div className="flex justify-center mt-8 space-x-2">
                 {Array.from({ length: totalSlides }).map((_, index) => (
@@ -274,7 +242,6 @@ export default function BlogIndex() {
               </div>
             )}
 
-            {/* View More Button */}
             <div className="text-center mt-8">
               <Link
                 href="/blogs"
@@ -286,7 +253,6 @@ export default function BlogIndex() {
           </div>
         )}
 
-        {/* Newsletter Signup - Always visible */}
         <div className="mt-16 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-2xl p-8 text-center w-full shadow-sm">
           <h3 className="text-2xl font-bold text-blue-800 mb-3">
             Stay Updated

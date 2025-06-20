@@ -5,10 +5,10 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
   try {
     const { email, otp } = await request.json();
-    console.log("Verifying OTP for:", email, "OTP:", otp); // Debug log
+    // console.log("Verifying OTP for:", email, "OTP:", otp); // Debug log
 
     if (!email || !otp) {
-      console.error("Missing email or OTP");
+      // console.error("Missing email or OTP");
       return NextResponse.json(
         { message: "Email and OTP are required" },
         { status: 400 }
@@ -16,15 +16,15 @@ export async function POST(request) {
     }
 
     const isValid = await verifyOTP(email, otp);
-    console.log("OTP validation result:", isValid); // Debug log
+    // console.log("OTP validation result:", isValid); // Debug log
 
     if (!isValid) {
-      console.error("Invalid OTP attempt for:", email);
+      // console.error("Invalid OTP attempt for:", email);
       return NextResponse.json({ message: "Invalid OTP" }, { status: 401 });
     }
 
     const session = await createSession(email);
-    console.log("Session created:", session); // Debug log
+    // console.log("Session created:", session); // Debug log
 
     const response = NextResponse.json(
       { message: "Login successful" },
@@ -42,7 +42,7 @@ export async function POST(request) {
 
     return response;
   } catch (error) {
-    console.error("Error in verify-otp:", error);
+    // console.error("Error in verify-otp:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

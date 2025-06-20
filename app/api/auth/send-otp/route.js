@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
   try {
     const { email } = await request.json();
-    console.log("Received email:", email); // Debug
+    // console.log("Received email:", email); // Debug
 
     if (!email) {
       return NextResponse.json(
@@ -16,11 +16,11 @@ export async function POST(request) {
     }
 
     const otp = generateOTP();
-    console.log("Generated OTP:", otp); // Debug
+    // console.log("Generated OTP:", otp); // Debug
 
     // THIS IS THE CRUCIAL LINE THAT MUST EXECUTE
     await storeOTP(email, otp);
-    console.log("OTP stored successfully"); // Debug
+    // console.log("OTP stored successfully"); // Debug
 
     // Send email (in development, just log it)
 
@@ -36,7 +36,7 @@ export async function POST(request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error in send-otp:", error);
+    // console.error("Error in send-otp:", error);
     return NextResponse.json(
       { message: "Failed to send OTP" },
       { status: 500 }

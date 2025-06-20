@@ -43,7 +43,7 @@ export async function POST(request) {
       public_id: result.public_id, // Store if you want to manage deletions later
     });
   } catch (error) {
-    console.error("Upload error:", error);
+    // console.error("Upload error:", error);
     return NextResponse.json(
       { error: "Failed to upload file" },
       { status: 500 }

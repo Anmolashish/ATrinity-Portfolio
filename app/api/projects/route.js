@@ -9,7 +9,7 @@ export async function GET() {
     const projects = await Project.find({});
     return NextResponse.json(projects, { status: 200 });
   } catch (e) {
-    console.error("MongoDB Error:", e);
+    // console.error("MongoDB Error:", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
@@ -22,7 +22,7 @@ export async function POST(request) {
     const project = await Project.create(body);
     return NextResponse.json(project, { status: 201 });
   } catch (e) {
-    console.error("MongoDB Error:", e);
+    // console.error("MongoDB Error:", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
@@ -37,7 +37,7 @@ export async function PUT(request) {
     });
     return NextResponse.json(project, { status: 200 });
   } catch (e) {
-    console.error("MongoDB Error:", e);
+    // console.error("MongoDB Error:", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
@@ -50,7 +50,7 @@ export async function DELETE(request) {
     await Project.findByIdAndDelete(_id);
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (e) {
-    console.error("MongoDB Error:", e);
+    // console.error("MongoDB Error:", e);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

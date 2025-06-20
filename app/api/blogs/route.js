@@ -21,7 +21,7 @@ export async function GET() {
       },
     });
   } catch (e) {
-    console.error("Blog GET Error:", e);
+    // console.error("Blog GET Error:", e);
     return new Response(
       JSON.stringify({
         error: "Failed to fetch blog posts",
@@ -101,7 +101,7 @@ export async function POST(request) {
       },
     });
   } catch (e) {
-    console.error("Blog POST Error:", e);
+    // console.error("Blog POST Error:", e);
     return new Response(
       JSON.stringify({
         error: "Failed to create blog post",
@@ -178,7 +178,7 @@ export async function PUT(request) {
       },
     });
   } catch (e) {
-    console.error("Blog PUT Error:", e);
+    // console.error("Blog PUT Error:", e);
     return new Response(
       JSON.stringify({
         error: "Failed to update blog post",
@@ -243,7 +243,7 @@ export async function DELETE(request) {
       }
     );
   } catch (e) {
-    console.error("Blog DELETE Error:", e);
+    // console.error("Blog DELETE Error:", e);
     return new Response(
       JSON.stringify({
         error: "Failed to delete blog post",

@@ -89,8 +89,8 @@ export default function Contact() {
         </svg>
       ),
       title: "Email Us",
-      content: "hello@codecrew.com",
-      link: "mailto:hello@codecrew.com",
+      content: "atrinity9928@gmail.com",
+      link: "mailto:atrinity9928@gmail.com",
       isLink: true,
     },
     {
@@ -110,8 +110,8 @@ export default function Contact() {
         </svg>
       ),
       title: "Call Us",
-      content: "+1 (234) 567-890",
-      link: "tel:+1234567890",
+      content: "+91 7888346624",
+      link: "tel:+91 7888346624",
       isLink: true,
     },
     {
@@ -167,7 +167,8 @@ export default function Contact() {
         </svg>
       ),
       title: "Visit Us",
-      content: "123 Web Dev Avenue\nTech City, TC 10001",
+      content:
+        "We’re fully online! Reach out anytime via email or social media.",
     },
   ];
 
@@ -248,7 +249,7 @@ export default function Contact() {
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 rounded-lg bg-blue-900 border border-blue-700 focus:border-yellow-400 focus:outline-none text-white placeholder-blue-400"
-                  placeholder="John Doe"
+                  placeholder="Atrinity"
                 />
               </div>
 
@@ -267,7 +268,7 @@ export default function Contact() {
                   onChange={handleChange}
                   required
                   className="w-full px-4 py-3 rounded-lg bg-blue-900 border border-blue-700 focus:border-yellow-400 focus:outline-none text-white placeholder-blue-400"
-                  placeholder="john@example.com"
+                  placeholder="atrinity9928@gmail.com"
                 />
               </div>
 

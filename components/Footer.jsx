@@ -16,11 +16,7 @@ export default function Footer() {
           {/* Column 1 - Logo & About */}
           <div className="flex flex-col">
             <Link href="/" className="flex items-center mb-4">
-              <img
-                src="/images/logo-light.svg"
-                alt="CodeCrew Logo"
-                className="h-8"
-              />
+              <img src="/logo.webp" alt="CodeCrew Logo" className="h-8" />
               <span className="ml-2 text-xl font-bold">CodeCrew</span>
             </Link>
             <p className="text-gray-400 mb-4">

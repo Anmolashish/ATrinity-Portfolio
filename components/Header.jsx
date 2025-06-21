@@ -53,18 +53,15 @@ export default function Header() {
             className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
             aria-label="CodeCrew Home"
           >
-            <div className="relative w-10 h-10">
+            <div className="relative w-20 h-20">
               <Image
-                src="/images/logo.svg"
+                src="/logo.webp"
                 alt="CodeCrew company logo"
-                width={40}
-                height={40}
+                width={100}
+                height={100}
                 // Removed priority
               />
             </div>
-            <span className="ml-3 text-xl font-bold text-blue-600">
-              CodeCrew
-            </span>
           </Link>
 
           {/* Desktop Nav */}

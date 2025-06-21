@@ -42,7 +42,7 @@ export default function Services() {
     {
       id: "web-maintenance",
       title: "Web Maintenance",
-      icon: "/icons/maintenance.svg",
+      icon: "web.webp",
       alt: "Maintenance icon",
       description:
         "Ongoing support and updates to keep your website secure, fast, and up-to-date with the latest technologies.",

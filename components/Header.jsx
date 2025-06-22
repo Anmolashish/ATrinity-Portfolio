@@ -51,14 +51,14 @@ export default function Header() {
           <Link
             href="/"
             className="flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 rounded"
-            aria-label="CodeCrew Home"
+            aria-label="Atrinity Home"
           >
-            <div className="relative w-20 h-20">
+            <div className="relative">
               <Image
-                src="/logo.webp"
-                alt="CodeCrew company logo"
-                width={100}
-                height={100}
+                src="/logo.jpg"
+                alt="Atrinity company logo"
+                width={130}
+                height={130}
                 // Removed priority
               />
             </div>
@@ -126,19 +126,16 @@ export default function Header() {
                     setIsMenuOpen(false);
                     document.body.style.overflow = "auto";
                   }}
-                  aria-label="CodeCrew Home"
+                  aria-label="Atrinity Home"
                 >
-                  <div className="relative w-10 h-10">
+                  <div className="relative ">
                     <Image
-                      src="/images/logo.svg"
-                      alt="CodeCrew company logo"
-                      width={40}
-                      height={40}
+                      src="/logo.jpg"
+                      alt="Atrinity company logo"
+                      width={130}
+                      height={130}
                     />
                   </div>
-                  <span className="ml-3 text-xl font-bold text-blue-600">
-                    CodeCrew
-                  </span>
                 </Link>
                 <button
                   className="p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"

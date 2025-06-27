@@ -15,19 +15,19 @@ export default function Testimonials() {
     },
     {
       id: 2,
-      content: `"Working with this team was a breath of fresh air. They understood our requirements perfectly and their Next.js solution has dramatically improved our site's performance."`,
+      content: `"We at Steelmans have worked with Atrinity on multiple websites. Their rates are much lower than the market, and the quality is truly professional. Highly recommended!"`,
       author: {
-        name: "Michael Chen",
-        role: "CTO, TechStart",
+        name: "Bikram Dhindsa",
+        role: "Owner (Steelsman)",
         avatar: "/images/testimonials/client2.jpg",
       },
     },
     {
       id: 3,
-      content: `"The SEO work CodeCrew performed tripled our organic traffic in just 3 months. Their technical expertise combined with strategic thinking delivered outstanding results."`,
+      content: `"The Gear Edges got a modern, user-friendly website from Atrinity. Their work is professional, and they signed all documents before starting. Really happy with the result!"`,
       author: {
-        name: "David Wilson",
-        role: "Marketing Director, GrowthCo",
+        name: "Harman Sharma",
+        role: "HR (The gear edges)",
         avatar: "/images/testimonials/client3.jpg",
       },
     },

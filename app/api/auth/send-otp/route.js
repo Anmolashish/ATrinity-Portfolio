@@ -3,10 +3,17 @@ import { generateOTP, storeOTP } from "@/lib/otp";
 import { sendEmail } from "@/lib/email";
 import { NextResponse } from "next/server";
 
+// List of authorized emails
+const AUTHORIZED_EMAILS = [
+  "atrinity9928@gmail.com",
+  "anmolashish20@gmail.com",
+  "aniketsharm090503@gmail.com",
+  // Add more emails as needed
+];
+
 export async function POST(request) {
   try {
     const { email } = await request.json();
-    // console.log("Received email:", email); // Debug
 
     if (!email) {
       return NextResponse.json(
@@ -15,14 +22,19 @@ export async function POST(request) {
       );
     }
 
+    // Check if email is in the authorized list
+    if (!AUTHORIZED_EMAILS.includes(email.toLowerCase())) {
+      return NextResponse.json(
+        {
+          message: "This email is not authorized to receive OTP",
+          validEmails: AUTHORIZED_EMAILS, // Optional: return list of valid emails
+        },
+        { status: 403 }
+      );
+    }
+
     const otp = generateOTP();
-    // console.log("Generated OTP:", otp); // Debug
-
-    // THIS IS THE CRUCIAL LINE THAT MUST EXECUTE
     await storeOTP(email, otp);
-    // console.log("OTP stored successfully"); // Debug
-
-    // Send email (in development, just log it)
 
     await sendEmail({
       to: email,
@@ -36,7 +48,6 @@ export async function POST(request) {
       { status: 200 }
     );
   } catch (error) {
-    // console.error("Error in send-otp:", error);
     return NextResponse.json(
       { message: "Failed to send OTP" },
       { status: 500 }

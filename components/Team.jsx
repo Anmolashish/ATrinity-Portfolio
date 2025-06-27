@@ -215,7 +215,7 @@ export default function Team() {
             <div className="relative group">
               <div className="overflow-hidden rounded-xl shadow-2xl max-w-4xl mx-auto aspect-[16/9] relative">
                 <Image
-                  src="/group.jpg"
+                  src="/images/teams/team-group.webp"
                   alt="Team photo during college days"
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -224,7 +224,7 @@ export default function Team() {
                 <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
                   <div className="text-left text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                     <h4 className="text-xl font-bold mb-1">
-                      Memories from 2022
+                      Memories from 2025
                     </h4>
                     <p className="text-sm opacity-90">
                       Our first hackathon together at the university campus
@@ -242,10 +242,10 @@ export default function Team() {
                     className="aspect-square rounded-lg overflow-hidden shadow-md relative"
                   >
                     <Image
-                      src={`/group-${item}.jpg`} // You would need additional group photos
+                      src={`/images/teams/team${item}.jpg`} // You would need additional group photos
                       alt={`Team memory ${item}`}
                       fill
-                      className="object-cover grayscale hover:grayscale-0 transition-all duration-300"
+                      className="object-cover transition-all duration-300"
                     />
                   </motion.div>
                 ))}
@@ -265,29 +265,30 @@ export default function Team() {
                 <div className="space-y-8">
                   {[
                     {
-                      year: "2019",
+                      year: "2021",
                       title: "First Met in College",
                       description: "Started our engineering journey together",
                     },
                     {
-                      year: "2020",
-                      title: "First Project Collaboration",
-                      description: "Built a college event management system",
-                    },
-                    {
-                      year: "2021",
-                      title: "Won Hackathon",
-                      description: "First prize at university tech fest",
-                    },
-                    {
                       year: "2022",
-                      title: "Formed Team",
-                      description: "Officially started working together",
+                      title: "First Project Collaboration",
+                      description:
+                        "Built a Restaurant and Travel based website",
                     },
                     {
                       year: "2023",
+                      title: "AI Collaboration",
+                      description: "Worked on the Law based AI chatbot",
+                    },
+                    {
+                      year: "2024",
                       title: "First Client Project",
                       description: "Delivered our first professional work",
+                    },
+                    {
+                      year: "2025",
+                      title: "Formed Team ",
+                      description: "Officially started working together",
                     },
                   ].map((item, index) => (
                     <div

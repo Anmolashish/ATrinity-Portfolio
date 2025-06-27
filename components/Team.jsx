@@ -227,7 +227,7 @@ export default function Team() {
                       Memories from 2025
                     </h4>
                     <p className="text-sm opacity-90">
-                      Our first hackathon together at the university campus
+                      Our first hackathon together at the Skillwarz Hackathon
                     </p>
                   </div>
                 </div>

@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 const AUTHORIZED_EMAILS = [
   "atrinity9928@gmail.com",
   "anmolashish20@gmail.com",
-  "aniketsharm090503@gmail.com",
+  "aniketsharma090503@gmail.com",
   // Add more emails as needed
 ];
 

@@ -48,7 +48,7 @@ const TeamMember = ({ member, index }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="bg-white rounded-xl overflow-hidden text-center p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-2 border border-gray-100"
+      className="bg-white rounded-xl overflow-hidden text-center p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-2 border border-gray-100 group"
       aria-labelledby={`${member.name.replace(/\s+/g, "-").toLowerCase()}-name`}
     >
       <div className="relative w-36 h-36 mx-auto mb-6 rounded-full overflow-hidden border-4 border-white shadow-lg ring-2 ring-blue-100">
@@ -56,7 +56,7 @@ const TeamMember = ({ member, index }) => {
           src={member.image}
           alt={`Portrait of ${member.name}`}
           fill
-          className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
+          className="object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-500"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
         />
       </div>

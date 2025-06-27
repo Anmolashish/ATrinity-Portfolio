@@ -1,6 +1,8 @@
+"use client";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
-// Shared Social Icon Component
+// Shared Social Icon Component with hover animations
 const SocialIcon = ({ platform }) => {
   const icons = {
     twitter: (
@@ -23,29 +25,38 @@ const SocialIcon = ({ platform }) => {
   };
 
   return (
-    <svg
-      className="w-5 h-5"
-      fill="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
+    <motion.div
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      className="p-1"
     >
-      {icons[platform]}
-    </svg>
+      <svg
+        className="w-5 h-5"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        {icons[platform]}
+      </svg>
+    </motion.div>
   );
 };
 
-const TeamMember = ({ member }) => {
+const TeamMember = ({ member, index }) => {
   return (
-    <article
-      className="bg-gray-50 rounded-xl overflow-hidden text-center p-5 hover:shadow-md transition-transform duration-300 hover:-translate-y-1"
+    <motion.article
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className="bg-white rounded-xl overflow-hidden text-center p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-2 border border-gray-100"
       aria-labelledby={`${member.name.replace(/\s+/g, "-").toLowerCase()}-name`}
     >
-      <div className="relative w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-white shadow-md">
+      <div className="relative w-36 h-36 mx-auto mb-6 rounded-full overflow-hidden border-4 border-white shadow-lg ring-2 ring-blue-100">
         <Image
           src={member.image}
           alt={`Portrait of ${member.name}`}
           fill
-          className="object-cover"
+          className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 25vw"
         />
       </div>
@@ -56,17 +67,19 @@ const TeamMember = ({ member }) => {
       >
         {member.name}
       </h3>
-      <p className="text-blue-600 mb-4">{member.role}</p>
-      <p className="text-gray-600 mb-4">{member.bio}</p>
+      <p className="text-blue-600 mb-4 font-medium">{member.role}</p>
+      <p className="text-gray-600 mb-4 text-sm">{member.bio}</p>
 
       {member.skills?.length > 0 && (
         <div className="mb-4 max-md:hidden">
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">Skills</h4>
+          <h4 className="text-xs font-semibold text-gray-500 mb-2 tracking-wider">
+            EXPERTISE
+          </h4>
           <div className="flex flex-wrap justify-center gap-2">
             {member.skills.map((skill) => (
               <span
                 key={skill}
-                className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded"
+                className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full font-medium"
               >
                 {skill}
               </span>
@@ -75,21 +88,23 @@ const TeamMember = ({ member }) => {
         </div>
       )}
 
-      <div className="border-t border-gray-200 pt-4">
+      <div className="border-t border-gray-100 pt-4">
         {member.funFact && (
-          <p className="text-sm text-gray-600 mb-3 max-md:hidden">
-            <span className="font-medium">Fun fact:</span> {member.funFact}
-          </p>
+          <div className="mb-3 max-md:hidden bg-blue-50 rounded-lg p-3">
+            <p className="text-xs text-blue-700">
+              <span className="font-bold">Fun fact:</span> {member.funFact}
+            </p>
+          </div>
         )}
 
-        <div className="flex justify-center space-x-3">
+        <div className="flex justify-center space-x-1">
           {Object.entries(member.social).map(([platform, url]) => (
             <a
               key={platform}
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-full p-1"
+              className="text-gray-400 hover:text-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-full p-1"
               aria-label={`${member.name}'s ${platform} profile`}
             >
               <SocialIcon platform={platform} />
@@ -97,7 +112,7 @@ const TeamMember = ({ member }) => {
           ))}
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 };
 
@@ -121,7 +136,7 @@ export default function Team() {
       role: "Backend Developer",
       skills: ["Node.js", "Express", "MongoDB", "My SQL"],
       bio: "Builds robust server-side logic and scalable databases.",
-      funFact: "Plays in a local band",
+      funFact: "Gym rat",
       image: "/anmol.webp",
       social: { twitter: "#", linkedin: "#", github: "#" },
     },
@@ -148,44 +163,160 @@ export default function Team() {
   return (
     <section
       id="team"
-      className="py-16 md:py-20 bg-white"
+      className="py-16 md:py-24 bg-gradient-to-b from-white to-blue-50"
       aria-label="Our team"
     >
-      <div className="container mx-auto px-4 sm:px-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-blue-800 mb-3">
-            Meet The Team
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto text-base md:text-lg">
+        <div className="text-center mb-16 md:mb-20">
+          <motion.h2
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-4xl md:text-5xl font-bold text-gray-900 mb-4"
+          >
+            Meet <span className="text-blue-600">The Team</span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-gray-600 max-w-2xl mx-auto text-lg md:text-xl"
+          >
             We're a group of college friends turning code into solutions.
-          </p>
+          </motion.p>
         </div>
 
         {/* Team Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {teamMembers.map((member) => (
-            <TeamMember key={member.name} member={member} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+          {teamMembers.map((member, index) => (
+            <TeamMember key={member.name} member={member} index={index} />
           ))}
         </div>
 
         {/* College Days Section */}
-        <div className="bg-blue-50 rounded-xl p-6 md:p-8 text-center">
-          <h3 className="text-2xl font-bold text-blue-800 mb-3">
-            Our College Days
-          </h3>
-          <p className="text-gray-600 max-w-2xl mx-auto mb-6">
-            Late night debugging, group projects, and infinite chai. That's how
-            this all began.
-          </p>
-          <div className="overflow-hidden rounded-xl shadow-lg max-w-4xl mx-auto aspect-[16/9] relative">
-            <Image
-              src="/images/team/group-photo.jpg"
-              alt="Team photo during college days"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 1024px"
-            />
+        <div className="bg-white rounded-2xl p-6 md:p-10 text-center shadow-xl border border-gray-100 overflow-hidden">
+          <div className="max-w-4xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                Our <span className="text-blue-600">College Days</span>
+              </h3>
+              <p className="text-gray-600 max-w-2xl mx-auto mb-8 text-lg">
+                Late night debugging, group projects, and infinite chai. That's
+                how this all began.
+              </p>
+            </motion.div>
+
+            <div className="relative group">
+              <div className="overflow-hidden rounded-xl shadow-2xl max-w-4xl mx-auto aspect-[16/9] relative">
+                <Image
+                  src="/group.jpg"
+                  alt="Team photo during college days"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 1024px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                  <div className="text-left text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                    <h4 className="text-xl font-bold mb-1">
+                      Memories from 2022
+                    </h4>
+                    <p className="text-sm opacity-90">
+                      Our first hackathon together at the university campus
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Photo grid overlay */}
+              <div className="hidden md:grid grid-cols-4 gap-4 mt-6">
+                {[1, 2, 3, 4].map((item) => (
+                  <motion.div
+                    key={item}
+                    whileHover={{ scale: 1.05 }}
+                    className="aspect-square rounded-lg overflow-hidden shadow-md relative"
+                  >
+                    <Image
+                      src={`/group-${item}.jpg`} // You would need additional group photos
+                      alt={`Team memory ${item}`}
+                      fill
+                      className="object-cover grayscale hover:grayscale-0 transition-all duration-300"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Milestones timeline */}
+            <div className="mt-12 hidden md:block">
+              <h4 className="text-lg font-semibold text-gray-800 mb-6">
+                Our Journey Timeline
+              </h4>
+              <div className="relative">
+                {/* Timeline line */}
+                <div className="absolute left-1/2 h-full w-0.5 bg-blue-200 transform -translate-x-1/2"></div>
+
+                {/* Timeline items */}
+                <div className="space-y-8">
+                  {[
+                    {
+                      year: "2019",
+                      title: "First Met in College",
+                      description: "Started our engineering journey together",
+                    },
+                    {
+                      year: "2020",
+                      title: "First Project Collaboration",
+                      description: "Built a college event management system",
+                    },
+                    {
+                      year: "2021",
+                      title: "Won Hackathon",
+                      description: "First prize at university tech fest",
+                    },
+                    {
+                      year: "2022",
+                      title: "Formed Team",
+                      description: "Officially started working together",
+                    },
+                    {
+                      year: "2023",
+                      title: "First Client Project",
+                      description: "Delivered our first professional work",
+                    },
+                  ].map((item, index) => (
+                    <div
+                      key={item.year}
+                      className={`relative flex items-center ${
+                        index % 2 === 0 ? "justify-end" : "justify-start"
+                      }`}
+                    >
+                      <div
+                        className={`w-5/12 p-4 rounded-lg shadow-md ${
+                          index % 2 === 0
+                            ? "bg-blue-50 text-right mr-6"
+                            : "bg-white text-left ml-6"
+                        }`}
+                      >
+                        <div className="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-blue-600 rounded-full border-4 border-white shadow"></div>
+                        <h5 className="font-bold text-blue-800">{item.year}</h5>
+                        <h6 className="font-semibold text-gray-800">
+                          {item.title}
+                        </h6>
+                        <p className="text-sm text-gray-600">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

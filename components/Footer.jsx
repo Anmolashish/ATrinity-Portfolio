@@ -16,8 +16,11 @@ export default function Footer() {
           {/* Column 1 - Logo & About */}
           <div className="flex flex-col">
             <Link href="/" className="flex items-center mb-4">
-              <img src="/logo.webp" alt="CodeCrew Logo" className="h-8" />
-              <span className="ml-2 text-xl font-bold">CodeCrew</span>
+              <img
+                src="/footer-logo2.png"
+                alt="Atrinity Logo"
+                className="h-15"
+              />
             </Link>
             <p className="text-gray-400 mb-4">
               College friends turned web development experts. We build fast,
@@ -98,7 +101,7 @@ export default function Footer() {
         {/* Footer Bottom */}
         <div className="border-t border-gray-800 pt-8 pb-4 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            &copy; {year} CodeCrew. All rights reserved.
+            &copy; {year} Atrinity. All rights reserved.
           </p>
 
           <div className="flex space-x-4">

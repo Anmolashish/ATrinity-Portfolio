@@ -138,7 +138,11 @@ export default function Team() {
       bio: "Builds robust server-side logic and scalable databases.",
       funFact: "Gym rat",
       image: "/anmol.webp",
-      social: { twitter: "#", linkedin: "#", github: "#" },
+      social: {
+        twitter: "https://x.com/batwal_anmol",
+        linkedin: "https://www.linkedin.com/in/anmol-batwal-52b101228/",
+        github: "https://github.com/Anmolashish",
+      },
     },
     {
       name: "Jagjeet Singh",

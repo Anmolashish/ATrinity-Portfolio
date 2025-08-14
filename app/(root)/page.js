@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import Portfolio from "@/components/Portfolio";
 import PortfolioSection from "@/components/Portfolio";
+import PricingComponents from "@/components/PricingComponents";
 import Services from "@/components/Services";
 import TeamSection from "@/components/Team";
 import TestimonialsSection from "@/components/Testimonial";
@@ -20,6 +21,7 @@ export default function Home() {
       <TeamSection />
       <AboutSection />
       <BlogIndex />
+      <PricingComponents />
       <TestimonialsSection />
       <ContactSection />
     </div>

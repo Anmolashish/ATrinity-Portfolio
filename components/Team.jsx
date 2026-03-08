@@ -27,7 +27,7 @@ export default function ResponsiveShowcase() {
       </div>
       <div className="relative flex justify-center">
         <Image
-          src="/computer-image.png"
+          src="/Computer-image.png"
           alt="iMac Mockup"
           width={900}
           height={600}

@@ -23,7 +23,7 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" aria-label="Home">
             <Image
-              src="/headerlogo.png"
+              src="/Headerlogo.png"
               alt="Atrinity logo"
               width={130}
               height={130}

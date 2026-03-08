@@ -1,11 +1,9 @@
 import AboutSection from "@/components/About";
+import HeroBlocks from "@/components/CTA";
 import BlogIndex from "@/components/Blog";
 import ContactSection from "@/components/Contact";
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import Portfolio from "@/components/Portfolio";
-import PortfolioSection from "@/components/Portfolio";
 import PricingComponents from "@/components/PricingComponents";
 import Services from "@/components/Services";
 import TeamSection from "@/components/Team";
@@ -17,12 +15,13 @@ export default function Home() {
     <div>
       <HeroSection />
       <Services />
+      <AboutSection />
       <Portfolio />
       <TeamSection />
-      <AboutSection />
-      <BlogIndex />
-      {/* <PricingComponents /> */}
+      <PricingComponents />
+      <HeroBlocks />
       <TestimonialsSection />
+      <BlogIndex />
       <ContactSection />
     </div>
   );

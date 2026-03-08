@@ -12,6 +12,7 @@
     "axios": "^1.10.0",
     "cloudinary": "^2.6.1",
     "framer-motion": "^12.19.1",
+    "lucide-react": "^0.555.0",
     "mongodb": "^6.17.0",
     "mongoose": "^8.15.2",
     "next": "15.3.3",

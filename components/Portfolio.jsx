@@ -1,213 +1,114 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
-const DEFAULT_IMAGE = "/default-project.jpg";
-const MAX_PROJECTS = 6;
-
-export default function Portfolio() {
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showAll, setShowAll] = useState(false);
-
-  const filters = [
-    { id: "all", label: "All Projects" },
-    { id: "react", label: "React" },
-    { id: "nextjs", label: "Next.js" },
-    { id: "seo", label: "SEO" },
-    { id: "education", label: "Education" },
-  ];
-
-  const truncateText = (text = "", maxLength = 100) =>
-    text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
+export default function ShowcaseSection() {
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    fetch("/api/projects")
-      .then((res) => res.json())
-      .then(setProjects)
-      .catch((err) => setError(err.message || "Error fetching projects"))
-      .finally(() => setLoading(false));
+    const timer = setTimeout(() => setIsVisible(true), 200);
+    return () => clearTimeout(timer);
   }, []);
 
-  const filteredProjects = useMemo(() => {
-    if (activeFilter === "all") return projects;
-    return projects.filter(
-      (p) =>
-        p.category?.toLowerCase() === activeFilter ||
-        p.technologies?.some((tech) => tech.toLowerCase() === activeFilter)
-    );
-  }, [projects, activeFilter]);
-
-  const displayedProjects = useMemo(() => {
-    return showAll ? filteredProjects : filteredProjects.slice(0, MAX_PROJECTS);
-  }, [filteredProjects, showAll]);
-
-  const handleFilterChange = (filterId) => {
-    setActiveFilter(filterId);
-    setShowAll(false); // Reset showAll when changing filters
-  };
-
   return (
-    <section id="portfolio" className="py-16 md:py-20 bg-gray-50">
-      <div className="container mx-auto px-4 sm:px-6">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-blue-800 mb-3">
-            Our Portfolio
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Check out some of our recent projects that showcase our skills.
-          </p>
-        </div>
+    <section className="w-full bg-white flex flex-col items-center py-20 pb-30 md:pb-70 px-4">
+      <div className="max-w-7xl w-full bg-black h-[40vh] rounded-3xl flex flex-col relative">
+        <h2 className="text-center text-white z-10 text-2xl md:text-4xl font-semibold mt-10 mb-16">
+          High-Quality Designs for
+          <span className="text-[#1A44C9]"> Modern Businesses</span>
+        </h2>
 
-        {/* Filters */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {filters.map((filter) => (
-            <button
-              key={filter.id}
-              onClick={() => handleFilterChange(filter.id)}
-              className={`px-4 py-2 rounded-full capitalize text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                activeFilter === filter.id
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Error */}
-        {error && (
-          <div className="text-center text-red-600 mb-6">
-            <p>{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-2 text-sm text-blue-600 hover:text-blue-800"
-            >
-              Retry
-            </button>
-          </div>
-        )}
-
-        {/* Projects Grid */}
-        {!error && (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 max-w-7xl mx-auto">
-              {displayedProjects.length > 0 ? (
-                displayedProjects.map((project, idx) => (
-                  <article
-                    key={project._id || project.id}
-                    className="bg-white rounded-xl shadow hover:shadow-md transition duration-300 overflow-hidden"
-                  >
-                    <div className="relative w-full h-48 md:h-52">
-                      <Image
-                        src={
-                          project.image || project.images?.[0] || DEFAULT_IMAGE
-                        }
-                        alt={`Screenshot of ${project.title}`}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        loading={idx > 2 ? "lazy" : "eager"}
-                        priority={idx === 0}
-                      />
-                    </div>
-                    <div className="p-5">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-lg font-bold text-gray-800">
-                          {project.title}
-                        </h3>
-                        <span
-                          className={`text-xs px-2 py-1 rounded-full ${
-                            project.type === "commercial"
-                              ? "bg-green-100 text-green-800"
-                              : project.type === "academic"
-                              ? "bg-purple-100 text-purple-800"
-                              : "bg-blue-100 text-blue-800"
-                          }`}
-                        >
-                          {project.type === "commercial"
-                            ? "Client"
-                            : project.type === "academic"
-                            ? "Academic"
-                            : "Personal"}
-                        </span>
-                      </div>
-
-                      <p className="text-gray-600 text-sm mb-3">
-                        {truncateText(project.description)}
-                      </p>
-
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {project.technologies?.slice(0, 4).map((tech) => (
-                          <span
-                            key={tech}
-                            className="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                        {project.technologies?.length > 4 && (
-                          <span className="text-xs text-gray-600">
-                            +{project.technologies.length - 4}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex justify-between items-center">
-                        <Link
-                          href={`/projects/${project._id || project.id}`}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                        >
-                          View Details →
-                        </Link>
-
-                        {project.demoUrl && (
-                          <a
-                            href={project.demoUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
-                          >
-                            Demo
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                ))
-              ) : (
-                <div className="text-center col-span-full">
-                  <p className="text-gray-600">
-                    No projects match this filter.
-                  </p>
-                  <button
-                    onClick={() => setActiveFilter("all")}
-                    className="mt-4 text-blue-600 hover:text-blue-800 font-medium text-sm"
-                  >
-                    Show all projects
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Show More/Less Button */}
-            {filteredProjects.length > MAX_PROJECTS && (
-              <div className="text-center mt-8">
-                <button
-                  onClick={() => setShowAll(!showAll)}
-                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-colors"
-                >
-                  {showAll ? "Show Less" : "Show More"}
-                </button>
+        {/* BACKGROUND RADIAL RINGS */}
+        <div className="absolute overflow-hidden z-0 w-full h-full">
+          <div className="relative flex justify-center">
+            <div className="absolute border-blue-600 border-4 rounded-full aspect-square w-full max-w-4xl blur-sm top-6 flex justify-center">
+              <div className="absolute border-blue-600 border-4 rounded-full aspect-square w-full max-w-3xl blur-sm top-14 flex justify-center">
+                <div className="absolute border-blue-600 border-4 rounded-full aspect-square w-full max-w-2xl blur-sm top-20"></div>
               </div>
-            )}
-          </>
-        )}
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="max-w-7xl w-full top-30 max-sm:top-35 absolute z-10 mx-auto max-sm:gap-2
+  flex justify-center gap-8
+  overflow-hidden
+"
+        >
+          {/* CARD 1 */}
+          <div
+            className={`rounded-3xl bg-gradient-to-b from-gray-100 to-[#adadad]
+    p-4 md:p-6 flex flex-col items-center text-center h-[250px] md:h-[400px] overflow-hidden
+    w-[150px] sm:w-[200px] md:w-[260px] lg:w-[300px] transition-all duration-700 ease-out hover:shadow-2xl
+    ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
+          >
+            <p className="text-black font-medium text-[13px] md:text-lg mb-3 md:mb-3 ">
+              Clean, responsive layouts for every{" "}
+              <span className="text-blue-600">device</span> .
+            </p>
+
+            <div className="w-full relative flex justify-center animate-float-slow">
+              <div className="w-[200px] md:w-[240px] lg:w-[300px]">
+                <Image
+                  src="/mockups/mock1.png"
+                  alt="Design showcase"
+                  width={300}
+                  height={400}
+                  className="hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* CARD 2 */}
+          <div
+            className={`rounded-3xl bg-gradient-to-b from-[#adadad] to-gray-100 
+  p-4 md:p-6 text-center h-[250px] md:h-[400px] overflow-hidden flex flex-col-reverse
+  w-[150px] sm:w-[200px] md:w-[260px] lg:w-[300px] transition-all duration-700 ease-out delay-200  hover:shadow-2xl
+  ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-20"}`}
+          >
+            <p className="text-black font-medium text-[13px] md:text-lg mt-3 md:mt-10">
+              Modern <span className="text-blue-600">UI crafted</span> for
+              better engagement.
+            </p>
+            <div className="w-full relative flex justify-center mb-15 animate-float-slow delay-300">
+              <div className="w-[200px] md:w-[240px] lg:w-[300px]">
+                <Image
+                  src="/mockups/mock2.png"
+                  alt="Design showcase"
+                  width={300}
+                  height={400}
+                  className="object-cover object-bottom hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* CARD 3 */}
+          <div
+            className={`hidden lg:flex rounded-3xl bg-gradient-to-b from-gray-100 to-[#adadad]
+    p-6 flex-col items-center text-center h-[400px] overflow-hidden
+    w-[300px] transition-all duration-700 ease-out delay-400  hover:shadow-2xl
+    ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
+          >
+            <p className="text-black font-medium text-lg mb-5 bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text ">
+              Brand-focused designs{" "}
+              <span className="text-blue-600">optimized</span> for growth.
+            </p>
+
+            <div className="w-full relative flex justify-center animate-float-slow delay-600">
+              <div className="w-[300px]">
+                <Image
+                  src="/mockups/mock3.png"
+                  alt="Design showcase"
+                  width={300}
+                  height={400}
+                  className="hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

@@ -3,30 +3,138 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-istok: "Istok Web", sans-serif;
+  --font-josefin: "Josefin Sans";
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  --font-display: "Cinzel", serif;
+  --font-serif: "Gowun Batang", serif;
+  --font-body: "Roboto", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* KEYFRAMES - Optimized for performance */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes slideLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-@keyframes fadeIn {
+@keyframes slideRight {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ANIMATION CLASSES - Use hardware acceleration */
+.animate-fade-up {
+  animation: fadeUp 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  /* Use translateZ(0) only when needed, not on all elements */
+  backface-visibility: hidden;
+}
+
+.animate-slide-left {
+  animation: slideLeft 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  backface-visibility: hidden;
+}
+
+.animate-slide-right {
+  animation: slideRight 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  backface-visibility: hidden;
+}
+
+/* STAGGERED DELAYS - No JavaScript needed */
+.delay-100 {
+  animation-delay: 100ms;
+}
+.delay-150 {
+  animation-delay: 150ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-250 {
+  animation-delay: 250ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+.delay-400 {
+  animation-delay: 400ms;
+}
+
+/* RESPECT PREFERENCES FOR REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-slide-left,
+  .animate-slide-right {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .delay-100,
+  .delay-150,
+  .delay-200,
+  .delay-250,
+  .delay-300,
+  .delay-400 {
+    animation-delay: 0ms !important;
+  }
+}
+
+/* Optimize blur effect for performance */
+.blur-2xl {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+img {
+  content-visibility: auto;
+}
+
+/* Add to your global CSS */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Custom scroll animation */
+@keyframes slideUpFade {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -34,6 +142,480 @@ body {
   }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.6s ease forwards;
+.animate-on-scroll {
+  animation: slideUpFade 0.8s ease-out forwards;
+}
+
+/* Hover effects */
+.hover-lift {
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Performance-optimized animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatSlow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes lineExpand {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 6rem;
+    opacity: 1;
+  }
+}
+
+@keyframes pulseSlow {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes textReveal {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes imageFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--rotate, 0deg));
+  }
+  50% {
+    transform: translateY(-5px) rotate(var(--rotate, 0deg));
+  }
+}
+
+@keyframes labelFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.05);
+  }
+}
+
+@keyframes blurPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    filter: blur(2rem);
+  }
+  50% {
+    opacity: 0.4;
+    filter: blur(2.2rem);
+  }
+}
+
+/* Animation classes - optimized with will-change only when needed */
+.animate-fade-up {
+  animation: fadeUp 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+.animate-float-slow {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+.animate-line-expand {
+  animation: lineExpand 1s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 3s ease-in-out infinite;
+}
+
+.animate-text-reveal {
+  animation: textReveal 0.8s ease-out forwards;
+}
+
+.animate-count-up {
+  animation: countUp 0.5s ease-out forwards;
+}
+
+.animate-image-float {
+  animation: imageFloat 3s ease-in-out infinite;
+  --rotate: 0deg;
+}
+
+.animate-label-float {
+  animation: labelFloat 2s ease-in-out infinite;
+}
+
+.animate-blur-pulse {
+  animation: blurPulse 4s ease-in-out infinite;
+}
+
+.animate-number-pulse {
+  animation: pulseSlow 2s ease-in-out infinite;
+}
+
+.animate-text-glow {
+  animation: pulseSlow 3s ease-in-out infinite;
+}
+
+.animate-text-glow-desktop {
+  animation: pulseSlow 4s ease-in-out infinite;
+}
+
+/* Scroll-triggered animations - Performance optimized */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.animate-on-scroll-item {
+  opacity: 0;
+  transform: translateY(15px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.animate-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Delays for staggered animations */
+.delay-100 {
+  animation-delay: 100ms;
+  transition-delay: 100ms;
+}
+.delay-200 {
+  animation-delay: 200ms;
+  transition-delay: 200ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+  transition-delay: 300ms;
+}
+.delay-400 {
+  animation-delay: 400ms;
+  transition-delay: 400ms;
+}
+.delay-500 {
+  animation-delay: 500ms;
+  transition-delay: 500ms;
+}
+.delay-600 {
+  animation-delay: 600ms;
+  transition-delay: 600ms;
+}
+.delay-1000 {
+  animation-delay: 1000ms;
+}
+
+/* Hover effects - GPU optimized */
+.hover-lift {
+  transition:
+    transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.hover-lift-desktop {
+  transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.hover-lift-desktop:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+.hover-scale {
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Performance optimizations */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .animate-on-scroll,
+  .animate-on-scroll-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Optimize for mobile performance */
+@media (max-width: 768px) {
+  .animate-image-float,
+  .animate-float-slow,
+  .animate-blur-pulse {
+    animation-duration: 6s; /* Slower on mobile for better performance */
+  }
+}
+
+/* Use will-change sparingly for elements that will animate */
+.animate-on-scroll,
+.animate-on-scroll-item {
+  will-change: opacity, transform;
+}
+
+@keyframes variableSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-variable-spin {
+  animation: variableSpin 15s linear infinite;
+}
+
+/* Optional: Add a pulsating glow effect */
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.1);
+  }
+}
+
+/* Realistic phone ringing with ripple effect */
+@keyframes phoneRingRealistic {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.05) rotate(-5deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(5deg);
+  }
+}
+
+@keyframes ringWave {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.animate-phone-ring-realistic {
+  animation: phoneRingRealistic 1s ease-in-out infinite;
+  position: relative;
+  overflow: visible;
+}
+
+.animate-ring-wave {
+  animation: ringWave 1s ease-out infinite;
+  animation-delay: 0.5s;
+}
+
+/* Staggered waves for more realistic effect */
+.animate-phone-ring-realistic::before,
+.animate-phone-ring-realistic::after {
+  content: "";
+  position: absolute;
+  border: 2px solid rgba(37, 99, 235, 0.3);
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  animation: ringWave 1.5s ease-out infinite;
+}
+
+.animate-phone-ring-realistic::before {
+  animation-delay: 0.2s;
+}
+
+.animate-phone-ring-realistic::after {
+  animation-delay: 0.4s;
+}
+
+/* Animation classes */
+@keyframes floatSlow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulseSlow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 0.3;
+    border-color: rgba(37, 99, 235, 0.3);
+  }
+  50% {
+    opacity: 0.6;
+    border-color: rgba(37, 99, 235, 0.8);
+  }
+}
+
+/* Animation utilities */
+.animate-float-slow {
+  animation: floatSlow 3s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulseSlow 2s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+/* Delays for staggered animations */
+.delay-200 {
+  animation-delay: 200ms;
+}
+.delay-300 {
+  animation-delay: 300ms;
+}
+.delay-400 {
+  animation-delay: 400ms;
+}
+.delay-600 {
+  animation-delay: 600ms;
+}
+.delay-1000 {
+  animation-delay: 1000ms;
+}
+.delay-2000 {
+  animation-delay: 2000ms;
+}
+
+/* Gradient text */
+.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Hover effects */
+.hover-scale-105:hover {
+  transform: scale(1.05);
+}
+
+.hover-shadow-2xl:hover {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-slow,
+  .animate-pulse-slow,
+  .animate-pulse-glow,
+  [class*="delay-"],
+  [class*="hover-"] {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbit-container {
+  animation: orbit 20s linear infinite;
+}
+
+.orbit-container-slow {
+  animation: orbit 28s linear infinite;
 }

@@ -1,475 +1,454 @@
 "use client";
-import React, { useState } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import Head from "next/head";
 
-const pricingPlans = [
-  {
-    id: 1,
-    name: "Basic Plan",
-    priceRange: "₹5,000 - ₹15,000",
-    description: "Ideal for small businesses, individuals, and startups",
-    summary: [
-      "Single-page static website",
-      "Mobile-responsive design",
-      "Basic contact features",
-      "1 round of revisions included",
-    ],
-    details: {
-      includes: [
-        "Single-Page Static Website (₹5,000 base)",
-        "Additional Pages: ₹1,000 per page (50% off first two)",
-        "Contact Features: ₹500 each (WhatsApp, email forms, redirects)",
-        "Basic SEO Meta Tag Setup: ₹1,000",
-        "Domain Configuration Support: ₹500",
-        "Hosting Setup: ₹1,000",
-        "Content Assistance: ₹1,000 (structure & stock images)",
-      ],
-      timeline: [
-        "Delivery: 3-5 business days (base plan)",
-        "Add-ons extend delivery by 1-2 days per item",
-        "Timeline adjusts if client delays content",
-      ],
-      notes: [
-        "Domain registration fees not included",
-        "Hosting charges paid separately by client",
-        "Does not include long-term maintenance",
-      ],
-      revisions: [
-        "1 round of revisions within 14 days",
-        "Additional revisions: ₹500/hour",
-        "Bug fixes within 3 days of launch included",
-      ],
-    },
-  },
-  {
-    id: 2,
-    name: "Standard Plan",
-    priceRange: "₹20,000 - ₹35,000",
-    description: "Dynamic websites with admin control",
-    summary: [
-      "3 core pages",
-      "Admin dashboard",
-      "Database integration",
-      "Email notifications",
-    ],
-    details: {
-      includes: [
-        "3 Core Pages: Landing, Admin Dashboard, Dynamic Display",
-        "Basic Admin Functionality (single user login)",
-        "1 Backend Table Included (basic CRUD operations)",
-        "Responsive & Optimized Design",
-        "Data Management Integration (MongoDB/Firebase)",
-      ],
-      addons: [
-        "Additional Pages: ₹1,000 per page (50% off first two)",
-        "Extra Backend Tables: ₹1,000 each",
-        "Email Notification System: ₹1,000",
-        "File Upload Feature: ₹1,500",
-        "Filter/Search Module: ₹1,000",
-        "Advanced SEO Setup: ₹2,000",
-      ],
-      timeline: [
-        "Delivery: 7-12 business days (base package)",
-        "Add-ons extend delivery by 1-3 days per item",
-      ],
-      tech: [
-        "Frontend: React/Next.js",
-        "Backend: Node.js/Firebase/Express",
-        "Database: MongoDB/Firebase Firestore",
-        "Hosting: Vercel/Netlify/Render",
-      ],
-      notes: [
-        "Does not include full copywriting/custom graphics",
-        "Role-based access requires Advanced Plan",
-      ],
-    },
-  },
-  {
-    id: 3,
-    name: "Advanced Plan",
-    priceRange: "₹40,000 - ₹90,000",
-    description: "Full-featured web applications",
-    summary: [
-      "Unlimited pages",
-      "CMS included",
-      "3 backend tables",
-      "Payment integration",
-    ],
-    details: {
-      includes: [
-        "Multi-Page Web Application (Up to 10 pages initially)",
-        "Admin Dashboard with CMS Functionality",
-        "3 Backend Tables Included",
-        "Basic Role-Based Access",
-        "Database Integration (Firebase/MongoDB/Supabase)",
-      ],
-      addons: [
-        "Payment Gateway Integration: ₹3,000-₹5,000",
-        "Advanced User Roles: ₹2,000",
-        "File Upload + Storage: ₹2,000",
-        "Analytics Dashboard: ₹2,500",
-        "API Integrations: ₹2,000-₹5,000",
-      ],
-      timeline: [
-        "Delivery: 12-18 business days (base project)",
-        "Add-ons extend timeline by 1-3 days each",
-      ],
-      tech: [
-        "Frontend: React/Next.js with Tailwind/MUI",
-        "Backend: Node.js/Express/Firebase Functions",
-        "Database: MongoDB/Firebase/Supabase",
-        "Hosting: Vercel/Netlify/Render or custom VPS",
-      ],
-      idealFor: [
-        "E-commerce platforms",
-        "Booking/appointment systems",
-        "Admin-controlled directories",
-        "SaaS-style dashboards",
-      ],
-    },
-  },
-];
+const DEFAULT_IMAGE = "/default-project.jpg";
 
-const termsAndConditions = [
-  "Booking fee (10%) is non-refundable",
-  "50% advance required at project start",
-  "Final 40% payment before delivery",
-  "2 free revisions included (Basic: 1 revision)",
-  "Additional revisions at ₹500/hour",
-  "Project marked inactive after 21 days of no response (₹1,000 reactivation fee)",
-  "Client responsible for content legality",
-  "Post-delivery security not included without maintenance plan",
-];
+export default function Portfolio() {
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const containerRef = useRef(null);
 
-export default function PricingComponents() {
-  const [selectedPlan, setSelectedPlan] = useState(2);
-  const [showModal, setShowModal] = useState(false);
-  const [currentPlan, setCurrentPlan] = useState(null);
+  const filters = [
+    { id: "all", label: "All Projects" },
+    { id: "react", label: "React" },
+    { id: "nextjs", label: "Next.js" },
+    { id: "seo", label: "SEO" },
+    { id: "education", label: "Education" },
+  ];
 
-  const openModal = (plan) => {
-    setCurrentPlan(plan);
-    setShowModal(true);
+  const truncateText = (text = "", maxLength = 100) =>
+    text.length <= maxLength ? text : `${text.slice(0, maxLength)}...`;
+
+  // Fetch projects from backend
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/projects");
+        if (!response.ok) throw new Error("Failed to fetch projects");
+        const data = await response.json();
+        setProjects(data);
+      } catch (err) {
+        setError(err.message || "Error fetching projects");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  const filteredProjects = useMemo(() => {
+    if (activeFilter === "all") return projects;
+    return projects.filter(
+      (p) =>
+        p.category?.toLowerCase() === activeFilter ||
+        p.technologies?.some((tech) => tech.toLowerCase() === activeFilter),
+    );
+  }, [projects, activeFilter]);
+
+  // Calculate slides
+  const getSlidesPerView = () => {
+    if (typeof window === "undefined") return 4;
+    if (window.innerWidth < 768) return 1;
+    if (window.innerWidth < 1024) return 2;
+    return 4;
+  };
+
+  const slidesPerView = getSlidesPerView();
+  const totalSlides = Math.ceil(filteredProjects.length / slidesPerView);
+
+  // Next/previous slide
+  const nextSlide = () => {
+    if (currentSlide < totalSlides - 1) {
+      setCurrentSlide((prev) => prev + 1);
+    }
+  };
+
+  const prevSlide = () => {
+    if (currentSlide > 0) {
+      setCurrentSlide((prev) => prev - 1);
+    }
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-b from-gray-50 to-white py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <span className="inline-block bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full mb-4">
-            Pricing Plans
-          </span>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Website <span className="text-blue-600">Development</span>
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-            Choose the perfect package for your business needs
-          </p>
-        </div>
+    <>
+      <Head>
+        <title>Featured Portfolio Projects | Web Development & Design</title>
+        <meta
+          name="description"
+          content="Explore our featured portfolio of web development projects including React, Next.js, SEO optimization, and educational platforms. See our latest digital creations."
+        />
+        <meta
+          name="keywords"
+          content="portfolio, web development, React, Next.js, SEO, education, digital projects"
+        />
+        <meta property="og:title" content="Featured Portfolio Projects" />
+        <meta
+          property="og:description"
+          content="Discover our latest digital creations that drive real results and deliver exceptional user experiences."
+        />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href="/portfolio" />
+      </Head>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {pricingPlans.map((plan) => (
+      <section
+        id="portfolio"
+        className="py-16 md:py-24 bg-white"
+        aria-label="Portfolio Section"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <header className="text-center mb-16">
             <div
-              key={plan.id}
-              className={`rounded-xl border-2 p-6 transition-all duration-300 cursor-pointer h-full flex flex-col
-                ${
-                  selectedPlan === plan.id
-                    ? "border-blue-500 bg-blue-50 shadow-lg"
-                    : "border-gray-200 bg-white hover:shadow-md"
-                }
-              `}
-              onClick={() => {
-                setSelectedPlan(plan.id);
-                openModal(plan);
-              }}
+              className="inline-flex items-center gap-3 mb-4"
+              aria-hidden="true"
             >
-              {plan.id === 2 && (
-                <div className="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
-                  MOST POPULAR
-                </div>
-              )}
+              <div className="w-4 h-0.5 bg-blue-500"></div>
+              <span className="text-sm font-semibold text-blue-600 tracking-widest">
+                OUR WORK
+              </span>
+              <div className="w-4 h-0.5 bg-blue-500"></div>
+            </div>
 
-              <h3 className="text-2xl font-bold text-gray-900">{plan.name}</h3>
-              <div className="text-xl font-extrabold text-gray-900 my-3">
-                {plan.priceRange}
-              </div>
-              <p className="text-gray-600 mb-4">{plan.description}</p>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-light mb-6">
+              <span className="text-gray-800">Featured</span>{" "}
+              <span className="text-transparent bg-clip-text font-medium bg-blue-600 ">
+                Portfolio
+              </span>
+            </h1>
 
-              <ul className="space-y-2 mb-6 flex-grow">
-                {plan.summary.map((item, index) => (
-                  <li key={index} className="flex items-start">
-                    <svg
-                      className="w-5 h-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+            <p className="text-gray-600 max-w-2xl mx-auto text-sm">
+              Discover our latest digital creations that drive{" "}
+              <span className="font-semibold text-blue-600">real results</span>{" "}
+              and deliver exceptional user experiences.
+            </p>
+          </header>
 
+          {/* Filter Buttons */}
+          <nav
+            className="flex flex-wrap justify-center gap-3 mb-12"
+            aria-label="Portfolio Filters"
+          >
+            {filters.map((filter) => (
               <button
-                className="mt-auto w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openModal(plan);
+                key={filter.id}
+                onClick={() => {
+                  setActiveFilter(filter.id);
+                  setCurrentSlide(0);
                 }}
+                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-300 ${
+                  activeFilter === filter.id
+                    ? "bg-blue-500 text-white shadow-lg"
+                    : "bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+                }`}
+                aria-pressed={activeFilter === filter.id}
+                aria-label={`Filter by ${filter.label}`}
               >
-                View Full Details
-                <svg
-                  className="w-4 h-4 ml-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+                {filter.label}
+              </button>
+            ))}
+          </nav>
+
+          {error && (
+            <div
+              className="text-center text-red-600 mb-8 bg-red-50 p-4 rounded-xl"
+              role="alert"
+            >
+              <p>{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                aria-label="Retry loading projects"
+              >
+                Retry Loading
               </button>
             </div>
-          ))}
-        </div>
-      </div>
+          )}
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-8">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h3 className="text-3xl font-bold text-gray-900">
-                    {currentPlan?.name}
-                  </h3>
-                  <div className="text-2xl font-extrabold text-gray-900 my-2">
-                    {currentPlan?.priceRange}
-                  </div>
-                  <p className="text-gray-600 text-lg">
-                    {currentPlan?.description}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-500 p-1"
-                >
-                  <svg
-                    className="w-8 h-8"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+          {/* Projects Carousel */}
+          <div className="relative">
+            {/* Carousel Container - Changed back to overflow-hidden and added pb-8 for shadow visibility */}
+            <div ref={containerRef} className="relative overflow-hidden pb-8">
+              <div
+                className="flex transition-transform duration-500 ease-out"
+                style={{
+                  transform: `translateX(-${currentSlide * 100}%)`,
+                }}
+              >
+                {loading ? (
+                  // Loading Skeletons
+                  Array.from({ length: totalSlides || 1 }).map(
+                    (_, slideIndex) => (
+                      <div
+                        key={slideIndex}
+                        className="w-full flex-shrink-0"
+                        style={{ minWidth: "100%" }}
+                      >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
+                          {Array.from({ length: slidesPerView }).map(
+                            (_, idx) => (
+                              <div
+                                key={idx}
+                                className="bg-white rounded-2xl overflow-hidden shadow-lg animate-pulse h-full"
+                              >
+                                <div className="h-48 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200"></div>
+                                <div className="p-6">
+                                  <div className="h-6 bg-gray-200 rounded mb-4"></div>
+                                  <div className="space-y-2">
+                                    <div className="h-4 bg-gray-200 rounded"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    ),
+                  )
+                ) : filteredProjects.length > 0 ? (
+                  // Actual Projects
+                  Array.from({ length: totalSlides }).map((_, slideIndex) => {
+                    const start = slideIndex * slidesPerView;
+                    const slideProjects = filteredProjects.slice(
+                      start,
+                      start + slidesPerView,
+                    );
+
+                    return (
+                      <div
+                        key={slideIndex}
+                        className="w-full flex-shrink-0"
+                        style={{ minWidth: "100%" }}
+                        role="group"
+                        aria-label={`Slide ${slideIndex + 1} of ${totalSlides}`}
+                      >
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
+                          {slideProjects.map((project) => (
+                            <article
+                              key={project._id || project.id}
+                              className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 flex flex-col h-full"
+                              itemScope
+                              itemType="https://schema.org/CreativeWork"
+                            >
+                              {/* Project Image */}
+                              <figure className="relative h-48 overflow-hidden flex-shrink-0">
+                                <Image
+                                  src={
+                                    project.image ||
+                                    project.images?.[0] ||
+                                    DEFAULT_IMAGE
+                                  }
+                                  alt={project.title}
+                                  fill
+                                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                                  loading="lazy"
+                                />
+
+                                {/* Gradient Overlay */}
+                                <div
+                                  className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"
+                                  aria-hidden="true"
+                                ></div>
+
+                                {/* Category Badge */}
+                                <figcaption className="absolute top-4 left-4">
+                                  <span className="bg-white/90 backdrop-blur-sm text-gray-800 text-xs px-3 py-1.5 rounded-full">
+                                    {project.category || "Web"}
+                                  </span>
+                                </figcaption>
+                              </figure>
+
+                              {/* Project Content - Made flex-grow to push button to bottom */}
+                              <div className="p-6 flex flex-col flex-grow">
+                                <h2
+                                  className="text-xl font-bold text-gray-900 mb-3 line-clamp-2"
+                                  itemProp="name"
+                                >
+                                  {project.title}
+                                </h2>
+
+                                <p
+                                  className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3"
+                                  itemProp="description"
+                                >
+                                  {truncateText(project.description, 120)}
+                                </p>
+
+                                {/* Technologies */}
+                                {project.technologies && (
+                                  <div className="flex flex-wrap gap-2 mb-6">
+                                    {project.technologies
+                                      .slice(0, 3)
+                                      .map((tech, i) => (
+                                        <span
+                                          key={i}
+                                          className="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full"
+                                          itemProp="keywords"
+                                        >
+                                          {tech}
+                                        </span>
+                                      ))}
+                                    {project.technologies.length > 3 && (
+                                      <span className="bg-gray-100 text-gray-700 text-xs px-3 py-1 rounded-full">
+                                        +{project.technologies.length - 3}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Action Buttons - Will stick to bottom */}
+                                <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-100">
+                                  <Link
+                                    href={`/projects/${
+                                      project._id || project.id
+                                    }`}
+                                    className="text-blue-600 hover:text-blue-700 text-sm font-semibold flex items-center gap-1"
+                                    aria-label={`View details for ${project.title}`}
+                                  >
+                                    View Details
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                      aria-hidden="true"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                      />
+                                    </svg>
+                                  </Link>
+
+                                  {project.demoUrl && (
+                                    <a
+                                      href={project.demoUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                                      aria-label={`Live demo for ${project.title} (opens in new tab)`}
+                                    >
+                                      Live Demo
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            </article>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  // No Projects State
+                  <div
+                    className="w-full flex-shrink-0"
+                    style={{ minWidth: "100%" }}
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="space-y-8">
-                {/* What's Included */}
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 text-xl mb-4 border-b pb-2 flex items-center">
-                    <svg
-                      className="w-6 h-6 text-blue-500 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    What's Included
-                  </h4>
-                  <ul className="space-y-3 text-gray-700">
-                    {currentPlan?.details.includes.map((item, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="text-blue-500 mr-2">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Add-ons */}
-                {currentPlan?.details.addons && (
-                  <div className="bg-blue-50 p-6 rounded-lg">
-                    <h4 className="font-semibold text-gray-800 text-xl mb-4 border-b pb-2 flex items-center">
-                      <svg
-                        className="w-6 h-6 text-blue-500 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                        />
-                      </svg>
-                      Optional Add-ons
-                    </h4>
-                    <ul className="space-y-3 text-gray-700">
-                      {currentPlan?.details.addons.map((item, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="text-blue-500 mr-2">•</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="text-center py-16">
+                      <div className="max-w-md mx-auto">
+                        <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
+                          <svg
+                            className="w-10 h-10 text-blue-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={1.5}
+                              d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                            />
+                          </svg>
+                        </div>
+                        <h3 className="text-gray-700 text-lg mb-4 font-medium">
+                          No projects found for this filter.
+                        </h3>
+                        <button
+                          onClick={() => setActiveFilter("all")}
+                          className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-full hover:shadow-lg transition-shadow duration-300"
+                          aria-label="Show all projects"
+                        >
+                          Show all projects
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
-
-                {/* Timeline */}
-                <div className="bg-gray-50 p-6 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 text-xl mb-4 border-b pb-2 flex items-center">
-                    <svg
-                      className="w-6 h-6 text-blue-500 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    Timeline & Delivery
-                  </h4>
-                  <ul className="space-y-2 text-gray-700">
-                    {currentPlan?.details.timeline.map((item, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="text-blue-500 mr-2">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Tech Stack */}
-                {currentPlan?.details.tech && (
-                  <div className="bg-blue-50 p-6 rounded-lg">
-                    <h4 className="font-semibold text-gray-800 text-xl mb-4 border-b pb-2 flex items-center">
-                      <svg
-                        className="w-6 h-6 text-blue-500 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
-                        />
-                      </svg>
-                      Tech Stack
-                    </h4>
-                    <ul className="space-y-2 text-gray-700">
-                      {currentPlan?.details.tech.map((item, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="text-blue-500 mr-2">•</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Notes/Ideal For */}
-                {(currentPlan?.details.notes ||
-                  currentPlan?.details.idealFor) && (
-                  <div className="bg-gray-50 p-6 rounded-lg">
-                    <h4 className="font-semibold text-gray-800 text-xl mb-4 border-b pb-2 flex items-center">
-                      <svg
-                        className="w-6 h-6 text-blue-500 mr-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                        />
-                      </svg>
-                      {currentPlan?.details.notes
-                        ? "Important Notes"
-                        : "Ideal For"}
-                    </h4>
-                    <ul className="space-y-2 text-gray-700">
-                      {(
-                        currentPlan?.details.notes ||
-                        currentPlan?.details.idealFor
-                      ).map((item, index) => (
-                        <li key={index} className="flex items-start">
-                          <span className="text-blue-500 mr-2">•</span>
-                          <span>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Terms & Conditions */}
-                <div className="bg-blue-50 p-6 rounded-lg">
-                  <h4 className="font-semibold text-gray-800 text-xl mb-4 border-b pb-2 flex items-center">
-                    <svg
-                      className="w-6 h-6 text-blue-500 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                      />
-                    </svg>
-                    Terms & Conditions
-                  </h4>
-                  <ul className="space-y-2 text-gray-700">
-                    {termsAndConditions.map((item, index) => (
-                      <li key={index} className="flex items-start">
-                        <span className="text-blue-500 mr-2">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg mt-6 text-lg"
-                  onClick={() => setShowModal(false)}
-                >
-                  Close Details
-                </button>
               </div>
             </div>
+
+            {/* Navigation Arrows */}
+            {filteredProjects.length > slidesPerView && (
+              <>
+                <button
+                  onClick={prevSlide}
+                  disabled={currentSlide === 0}
+                  className={`absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 ${
+                    currentSlide === 0
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-50 hover:shadow-xl"
+                  } md:left-6 z-10`}
+                  aria-label="Previous slide"
+                  aria-disabled={currentSlide === 0}
+                >
+                  <span aria-hidden="true">←</span>
+                </button>
+                <button
+                  onClick={nextSlide}
+                  disabled={currentSlide >= totalSlides - 1}
+                  className={`absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center transition-all duration-300 ${
+                    currentSlide >= totalSlides - 1
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-50 hover:shadow-xl"
+                  } md:right-6 z-10`}
+                  aria-label="Next slide"
+                  aria-disabled={currentSlide >= totalSlides - 1}
+                >
+                  <span aria-hidden="true">→</span>
+                </button>
+              </>
+            )}
+
+            {/* Slide Dots Indicator */}
+            {totalSlides > 1 && (
+              <div
+                className="flex justify-center gap-2 mt-8"
+                role="tablist"
+                aria-label="Slide indicators"
+              >
+                {Array.from({ length: totalSlides }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentSlide(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      index === currentSlide
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500 w-8"
+                        : "bg-gray-300 hover:bg-gray-400"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                    aria-selected={index === currentSlide}
+                    role="tab"
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      )}
-    </div>
+      </section>
+    </>
   );
 }

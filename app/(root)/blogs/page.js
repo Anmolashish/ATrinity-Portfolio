@@ -8,6 +8,7 @@ import HeroBlocks from "@/components/CTA";
 import TeamSection from "@/components/Team";
 import React from "react";
 import PageHeader from "@/components/PageHeader";
+import Newsletter from "@/components/Newsletter";
 
 export default function BlogIndex() {
   const [blogPosts, setBlogPosts] = useState([]);
@@ -340,35 +341,7 @@ export default function BlogIndex() {
 
         {/* Newsletter Signup */}
       </div>
-      <div className="my-16 min-h-[200px] p-8 text-center w-full shadow-sm relative bg-[#2003FF] overflow-hidden">
-        <div className=" absolute -left-15 -bottom-20 blur-xs w-60 aspect-square border-3 border-white rounded-full"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-xs w-150 aspect-square border-3 border-white rounded-full"></div>
-        <div className=" absolute -right-15 -top-20 blur-xs w-60 aspect-square border-3 border-white rounded-full"></div>
-        <div className="">
-          <h3 className="text-2xl font-bold text-white mb-3">Stay Updated</h3>
-          <p className="text-white mb-6 max-w-2xl mx-auto">
-            Subscribe to our newsletter to get the latest blog posts and web
-            development tips.
-          </p>
-          <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="Your email address"
-              className="flex-grow px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300 border border-blue-200 bg-white"
-              required
-            />
-            <button
-              type="submit"
-              className="bg-blue-600 text-white hover:bg-blue-700 font-semibold px-6 py-3 rounded-lg transition-colors shadow-sm"
-            >
-              Subscribe
-            </button>
-          </form>
-          <p className="text-xs text-white mt-4">
-            We respect your privacy. Unsubscribe at any time.
-          </p>
-        </div>
-      </div>
+      <Newsletter />
       <div className="container mx-auto px-4 sm:px-6">
         <section className="mb-32">
           {/* Section Header */}

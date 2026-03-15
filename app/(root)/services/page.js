@@ -5,6 +5,7 @@ import SerivesPage2 from "@/components/SerivesPage2";
 import Services from "@/components/Services";
 import ServicesPage1 from "@/components/ServicesPage1";
 import ServicesPage3 from "@/components/ServicesPage3";
+import ServicesPage4 from "@/components/ServicesPage4";
 import TeamSection from "@/components/Team";
 import React from "react";
 
@@ -14,18 +15,19 @@ export default function page() {
       <PageHeader
         headingText={
           <>
-            Crafting Digital Solutions
+            Powerful Digital Services
             <br />
-            <span className="text-[#2A66FF]">Through Our Projects</span>
+            <span className="text-[#2A66FF]">Built for Modern Businesses</span>
           </>
         }
-        paraText="Explore web development, design, and digital solutions delivered by Atrinity, a Jalandhar-based IT agency. Each project reflects our focus on performance, modern technology, and results-driven development."
-        buttonText="View All Projects"
+        paraText="Discover the range of web development, UI/UX design, and digital solutions offered by Atrinity. As a modern IT agency, we focus on building fast, scalable, and performance-driven websites and applications that help businesses establish a strong online presence."
+        buttonText="Explore Our Services"
       />
       <Services />
       <ServicesPage1 />
       <SerivesPage2 />
       <ServicesPage3 />
+      <ServicesPage4 />
       <TeamSection />
       <HeroBlocks />
       <Contact />

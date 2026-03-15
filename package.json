@@ -16,7 +16,7 @@
     "mongodb": "^6.17.0",
     "mongoose": "^8.15.2",
     "next": "15.3.8",
-    "nodemailer": "^7.0.3",
+    "nodemailer": "^7.0.13",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-top-loading-bar": "^3.0.2"

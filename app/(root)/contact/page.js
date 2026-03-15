@@ -8,13 +8,15 @@ export default function page() {
       <PageHeader
         headingText={
           <>
-            Crafting Digital Solutions
+            Let&apos;s Start a Conversation
             <br />
-            <span className="text-[#2A66FF]">Through Our Projects</span>
+            <span className="text-[#2A66FF]">
+              Build Something Great Together
+            </span>
           </>
         }
-        paraText="Explore web development, design, and digital solutions delivered by Atrinity, a Jalandhar-based IT agency. Each project reflects our focus on performance, modern technology, and results-driven development."
-        buttonText="View All Projects"
+        paraText="Have a project in mind or need expert guidance for your next digital product? Get in touch with Atrinity to discuss web development, design, and scalable digital solutions tailored to your business needs."
+        buttonText="Contact Our Team"
       />
       <ContactPage1 />
       <Contact />
